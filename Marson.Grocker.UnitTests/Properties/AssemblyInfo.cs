@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Grocker")]
-[assembly: AssemblyDescription("A command line utility to tail log files and apply colors to important lines.")]
+[assembly: AssemblyTitle("Marson.Grocker.UnitTests")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Grocker")]
-[assembly: AssemblyCopyright("Copyright (c) 2016 Helgi Hafthorsson")]
+[assembly: AssemblyProduct("Marson.Grocker.UnitTests")]
+[assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("8902019b-5f5a-4693-ac58-90594e3589f0")]
+[assembly: Guid("83b148d3-5417-4e84-9867-89c2c7fcb91a")]
 
 // Version information for an assembly consists of the following four values:
 //

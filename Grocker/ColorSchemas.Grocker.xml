@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<ArrayOfColorSchema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ColorSchema>
+    <Name>SOA</Name>
+    <SelectorPattern>^\[\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}.\d{3}\]</SelectorPattern>
+    <Filters>
+      <ColorFilter>
+        <Pattern>\[Warning\]</Pattern>
+        <ForegroundColor>Yellow</ForegroundColor>
+        <BackgroundColor>Black</BackgroundColor>
+      </ColorFilter>
+      <ColorFilter>
+        <Pattern>\[Error\]</Pattern>
+        <ForegroundColor>White</ForegroundColor>
+        <BackgroundColor>Red</BackgroundColor>
+      </ColorFilter>
+      <ColorFilter>
+        <Pattern>\[Debug\]</Pattern>
+        <ForegroundColor>Gray</ForegroundColor>
+        <BackgroundColor>Black</BackgroundColor>
+      </ColorFilter>
+      <ColorFilter>
+        <Pattern>\[Info\]</Pattern>
+        <ForegroundColor>Cyan</ForegroundColor>
+        <BackgroundColor>Black</BackgroundColor>
+      </ColorFilter>
+    </Filters>
+  </ColorSchema>
+  <ColorSchema>
+    <Name>Core</Name>
+    <SelectorPattern>^\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}.\d{3}\|TRID</SelectorPattern>
+    <Filters>
+      <ColorFilter>
+        <Pattern>\|WARNING\&gt;</Pattern>
+        <ForegroundColor>Black</ForegroundColor>
+        <BackgroundColor>Yellow</BackgroundColor>
+      </ColorFilter>
+      <ColorFilter>
+        <Pattern>\|ERROR\&gt;</Pattern>
+        <ForegroundColor>White</ForegroundColor>
+        <BackgroundColor>Red</BackgroundColor>
+      </ColorFilter>
+      <ColorFilter>
+        <Pattern>\|DEBUG\&gt;</Pattern>
+        <ForegroundColor>Black</ForegroundColor>
+        <BackgroundColor>Gray</BackgroundColor>
+      </ColorFilter>
+      <ColorFilter>
+        <Pattern>\|INFO\&gt;</Pattern>
+        <ForegroundColor>Black</ForegroundColor>
+        <BackgroundColor>Cyan</BackgroundColor>
+      </ColorFilter>
+    </Filters>
+  </ColorSchema>
+  <ColorSchema>
+    <Name>IIS</Name>
+    <SelectorPattern>^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\s)|(#\w+:)</SelectorPattern>
+    <Filters>
+      <ColorFilter>
+        <Pattern>POST .*- [3-5]\d\d </Pattern>
+        <ForegroundColor>White</ForegroundColor>
+        <BackgroundColor>Red</BackgroundColor>
+      </ColorFilter>
+      <ColorFilter>
+        <Pattern>POST .*- 2\d\d </Pattern>
+        <ForegroundColor>Black</ForegroundColor>
+        <BackgroundColor>Cyan</BackgroundColor>
+      </ColorFilter>
+    </Filters>
+  </ColorSchema>
+</ArrayOfColorSchema>

@@ -44,7 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColorScope.cs" />
     <Compile Include="CommandLineParameters.cs" />
+    <Compile Include="ConsoleLineWriter.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
@@ -58,6 +60,11 @@
       <Project>{b968511c-b574-445d-a39a-2da04f43c617}</Project>
       <Name>Marson.Grocker.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ColorSchemas.Grocker.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

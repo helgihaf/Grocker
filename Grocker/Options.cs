@@ -11,6 +11,8 @@ namespace Grocker
     {
         public string DirectoryPath { get; set; }
         public string Filter { get; set; }
+        public bool EnableColorSchema { get; set; }
+        public string ColorSchemaName { get; set; }
 
         public static Options Parse(string[] args)
         {
@@ -26,9 +28,22 @@ namespace Grocker
                 return null;
             }
 
+            if (clp.DetachNamedBool("?"))
+            {
+                ShowUsage();
+                return null;
+            }
+
             var result = new Options();
-            result.DirectoryPath = clp.DetachNamed("d");
+
+            result.DirectoryPath = clp.DetachPositional();
             result.Filter = clp.DetachNamed("f");
+            result.EnableColorSchema = !clp.DetachNamedBool("nc");
+            if (result.EnableColorSchema)
+            {
+                result.ColorSchemaName = clp.DetachNamed("c");
+            }
+
             if (clp.Named.Count > 0)
             {
                 foreach (var name in clp.Named.Keys)
@@ -50,13 +65,24 @@ namespace Grocker
 
         private static void ShowUsage()
         {
+            var assembly = Assembly.GetExecutingAssembly();
+            Console.WriteLine("Marson Grocker. Version " + assembly.GetName().Version.ToString());
+            var copyrightAttribute = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>();
+            if (copyrightAttribute != null)
+            {
+                Console.WriteLine(copyrightAttribute.Copyright);
+            }
             Console.WriteLine();
-            Console.WriteLine("Marson Grocker version " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
-            Console.WriteLine("Usage:");
-            Console.WriteLine(" grocker [-d directory] [-f filter]");
+            Console.WriteLine("Usage: Grocker [directory] [-f filter] [-c [colorSchemaName]]");
             Console.WriteLine();
-            Console.WriteLine("   Default directory is current directory");
-            Console.WriteLine("   Default filter is *.log");
+            Console.WriteLine("  [directory]");
+            Console.WriteLine("    The directory to monitor. Default is current directory.");
+            Console.WriteLine("  [-f filter]");
+            Console.WriteLine("    File filter wildcard. Default is *.log");
+            Console.WriteLine("  [-c colorSchemaName]");
+            Console.WriteLine("    Color schema. Default is auto detect. Incompatible with -nc");
+            Console.WriteLine("  [-nc]");
+            Console.WriteLine("    No color schema. Incompatible with -c");
             Console.WriteLine();
         }
     }
