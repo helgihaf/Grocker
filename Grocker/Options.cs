@@ -1,89 +1,95 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Grocker
 {
-    class Options
+    /// <summary>
+    /// Encapsulates the command-line options used by Grocker
+    /// </summary>
+    public class Options
     {
+        public bool HelpWanted { get; set; }
         public string DirectoryPath { get; set; }
         public string Filter { get; set; }
         public bool EnableColorSchema { get; set; }
         public string ColorSchemaName { get; set; }
 
+        /// <summary>
+        /// Parses the specified string arguments into a new instance of the Options class.
+        /// </summary>
+        /// <param name="args">The arguments to parse.</param>
+        /// <returns>A new instance of the Options class initialized from the specidifed string arguments</returns>
+        /// <exception cref="ArgumentException">There is an error parsing an argument.</exception>
         public static Options Parse(string[] args)
         {
-            CommandLineParameters clp;
-            try
-            {
-                clp = CommandLineParameters.Parse(args);
-            }
-            catch (ArgumentException ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                ShowUsage();
-                return null;
-            }
+            var parameters = CommandLineParameters.Parse(args);
 
-            if (clp.DetachNamedBool("?"))
-            {
-                ShowUsage();
-                return null;
-            }
+            var options = CreateOptions(parameters);
+            CheckForInvalidParameters(parameters);
 
-            var result = new Options();
-
-            result.DirectoryPath = clp.DetachPositional();
-            result.Filter = clp.DetachNamed("f");
-            result.EnableColorSchema = !clp.DetachNamedBool("nc");
-            if (result.EnableColorSchema)
-            {
-                result.ColorSchemaName = clp.DetachNamed("c");
-            }
-
-            if (clp.Named.Count > 0)
-            {
-                foreach (var name in clp.Named.Keys)
-                {
-                    Console.Error.WriteLine("Invalid option /" + name);
-                }
-                ShowUsage();
-                return null;
-            }
-
-            if (clp.Positionals.Count > 0)
-            {
-                Console.Error.WriteLine("Invalid argument");
-                ShowUsage();
-            }
-
-            return result;
+            return options;
         }
 
-        private static void ShowUsage()
+        private static Options CreateOptions(CommandLineParameters parameters)
+        {
+            var options = new Options();
+            options.HelpWanted = parameters.DetachNamedBool("?");
+            if (options.HelpWanted)
+            {
+                return options;
+            }
+
+            options.DirectoryPath = parameters.DetachPositional();
+            options.Filter = parameters.DetachNamed("f");
+            options.EnableColorSchema = !parameters.DetachNamedBool("nc");
+            if (options.EnableColorSchema)
+            {
+                options.ColorSchemaName = parameters.DetachNamed("c");
+            }
+
+            return options;
+        }
+
+        private static void CheckForInvalidParameters(CommandLineParameters parameters)
+        {
+            if (parameters.Named.Count > 0)
+            {
+                foreach (var name in parameters.Named.Keys)
+                {
+                    throw new ArgumentException("Invalid option /" + name);
+                }
+            }
+
+            if (parameters.Positionals.Count > 0)
+            {
+                throw new ArgumentException(string.Format("Invalid argument \"{0}\"", parameters.Positionals[0]));
+            }
+        }
+
+        public static string GetHelpText()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            Console.WriteLine("Marson Grocker. Version " + assembly.GetName().Version.ToString());
+            var sb = new StringBuilder();
+            sb.AppendLine("Marson Grocker. Version " + assembly.GetName().Version.ToString());
             var copyrightAttribute = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>();
             if (copyrightAttribute != null)
             {
-                Console.WriteLine(copyrightAttribute.Copyright);
+                sb.AppendLine(copyrightAttribute.Copyright);
             }
-            Console.WriteLine();
-            Console.WriteLine("Usage: Grocker [directory] [-f filter] [-c [colorSchemaName]]");
-            Console.WriteLine();
-            Console.WriteLine("  [directory]");
-            Console.WriteLine("    The directory to monitor. Default is current directory.");
-            Console.WriteLine("  [-f filter]");
-            Console.WriteLine("    File filter wildcard. Default is *.log");
-            Console.WriteLine("  [-c colorSchemaName]");
-            Console.WriteLine("    Color schema. Default is auto detect. Incompatible with -nc");
-            Console.WriteLine("  [-nc]");
-            Console.WriteLine("    No color schema. Incompatible with -c");
-            Console.WriteLine();
+            sb.AppendLine();
+            sb.AppendLine("Usage: Grocker [directory] [-f filter] [-c [colorSchemaName]]");
+            sb.AppendLine();
+            sb.AppendLine("  [directory]");
+            sb.AppendLine("    The directory to monitor. Default is current directory.");
+            sb.AppendLine("  [-f filter]");
+            sb.AppendLine("    File filter wildcard. Default is *.log");
+            sb.AppendLine("  [-c colorSchemaName]");
+            sb.AppendLine("    Color schema. Default is auto detect. Incompatible with -nc");
+            sb.AppendLine("  [-nc]");
+            sb.AppendLine("    No color schema. Incompatible with -c");
+            sb.AppendLine();
+            return sb.ToString();
         }
     }
 }

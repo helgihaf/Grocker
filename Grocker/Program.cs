@@ -13,35 +13,39 @@ namespace Grocker
     {
         static void Main(string[] args)
         {
-            Options options = Options.Parse(args);
-            if (options == null)
+            Watcher watcher = CreateWatcher(args);
+            if (watcher != null)
             {
-                return;
-            }
-
-            Watcher watcher;
-            try
-            {
-                watcher = CreateWatcher(options);
-            }
-            catch (ApplicationException ex)
-            {
-                Console.Error.WriteLine(ex.Message);
                 return;
             }
 
             watcher.Start();
-
-            bool doRun = true;
-            while (doRun)
-            {
-                var keyInfo = Console.ReadKey();
-                doRun = keyInfo.KeyChar != 'q';
-            }
+            WaitForStopSignal();
             watcher.Stop();
         }
 
-        private static Watcher CreateWatcher(Options options)
+        private static Watcher CreateWatcher(string[] args)
+        {
+            Watcher watcher = null;
+            try
+            {
+                Options options = Options.Parse(args);
+                watcher = CreateWatcherWithOptions(options);
+            }
+            catch (ArgumentException ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                Console.WriteLine(Options.GetHelpText());
+            }
+            catch (ApplicationException ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+            }
+
+            return watcher;
+        }
+
+        private static Watcher CreateWatcherWithOptions(Options options)
         {
             var watcher = new Watcher();
 
@@ -101,102 +105,14 @@ namespace Grocker
             return new XmlColorSchemaSerializer();
         }
 
-        private static List<ColorSchema> CreateColorSchemas()
+        private static void WaitForStopSignal()
         {
-            var soaSchema = new ColorSchema
+            bool doRun = true;
+            while (doRun)
             {
-                Name = "SOA",
-                SelectorPattern = @"^\[\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}.\d{3}\]",
-            };
-            soaSchema.Filters.AddRange(new[]
-                {
-                    new ColorFilter
-                    {
-                        Pattern = @"\[Warning\]",
-                        ForegroundColor = ConsoleColor.Yellow,
-                        BackgroundColor = ConsoleColor.Black,
-                    },
-                    new ColorFilter
-                    {
-                        Pattern = @"\[Error\]",
-                        ForegroundColor = ConsoleColor.White,
-                        BackgroundColor = ConsoleColor.Red,
-                    },
-                    new ColorFilter
-                    {
-                        Pattern = @"\[Debug\]",
-                        ForegroundColor = ConsoleColor.Gray,
-                        BackgroundColor = ConsoleColor.Black,
-                    },
-                    new ColorFilter
-                    {
-                        Pattern = @"\[Info\]",
-                        ForegroundColor = ConsoleColor.Cyan,
-                        BackgroundColor = ConsoleColor.Black,
-                    },
-                    //new ColorFilter
-                    //{
-                    //    Pattern = @"\[Activity.*\]",
-                    //    ForegroundColor = ConsoleColor.Black,
-                    //    BackgroundColor = ConsoleColor.Gray,
-                    //},
-                });
-
-            var coreSchema = new ColorSchema
-            {
-                Name = "Core",
-                SelectorPattern = @"^\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}.\d{3}\|TRID",
-            };
-            coreSchema.Filters.AddRange(new[]
-                {
-                    new ColorFilter
-                    {
-                        Pattern = @"\|WARNING\>",
-                        ForegroundColor = ConsoleColor.Black,
-                        BackgroundColor = ConsoleColor.Yellow,
-                    },
-                    new ColorFilter
-                    {
-                        Pattern = @"\|ERROR\>",
-                        ForegroundColor = ConsoleColor.White,
-                        BackgroundColor = ConsoleColor.Red,
-                    },
-                    new ColorFilter
-                    {
-                        Pattern = @"\|DEBUG\>",
-                        ForegroundColor = ConsoleColor.Black,
-                        BackgroundColor = ConsoleColor.Gray,
-                    },
-                    new ColorFilter
-                    {
-                        Pattern = @"\|INFO\>",
-                        ForegroundColor = ConsoleColor.Black,
-                        BackgroundColor = ConsoleColor.Cyan,
-                    },
-                });
-
-            var iisSchema = new ColorSchema
-            {
-                Name = "IIS",
-                SelectorPattern = @"^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\s)|(#\w+:)",
-            };
-            iisSchema.Filters.AddRange(new[]
-                {
-                    new ColorFilter
-                    {
-                        Pattern = @"POST .*- [3-5]\d\d ",
-                        ForegroundColor = ConsoleColor.White,
-                        BackgroundColor = ConsoleColor.Red,
-                    },
-                    new ColorFilter
-                    {
-                        Pattern = @"POST .*- 2\d\d ",
-                        ForegroundColor = ConsoleColor.Black,
-                        BackgroundColor = ConsoleColor.Cyan,
-                    },
-                });
-
-            return new List<ColorSchema>(new[] { soaSchema, coreSchema, iisSchema });
+                var keyInfo = Console.ReadKey();
+                doRun = keyInfo.KeyChar != 'q';
+            }
         }
     }
 }
