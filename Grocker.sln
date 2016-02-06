@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marson.Grocker.Common", "Marson.Grocker.Common\Marson.Grocker.Common.csproj", "{B968511C-B574-445D-A39A-2DA04F43C617}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marson.Grocker.UnitTests", "Marson.Grocker.UnitTests\Marson.Grocker.UnitTests.csproj", "{83B148D3-5417-4E84-9867-89C2C7FCB91A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrockerWpf", "GrockerWpf\GrockerWpf.csproj", "{22CB41DC-B91C-4AA6-A8DB-64F03A98467C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grocker", "Grocker\Grocker.csproj", "{8902019B-5F5A-4693-AC58-90594E3589F0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B968511C-B574-445D-A39A-2DA04F43C617}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B968511C-B574-445D-A39A-2DA04F43C617}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B968511C-B574-445D-A39A-2DA04F43C617}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B968511C-B574-445D-A39A-2DA04F43C617}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83B148D3-5417-4E84-9867-89C2C7FCB91A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83B148D3-5417-4E84-9867-89C2C7FCB91A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83B148D3-5417-4E84-9867-89C2C7FCB91A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83B148D3-5417-4E84-9867-89C2C7FCB91A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22CB41DC-B91C-4AA6-A8DB-64F03A98467C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22CB41DC-B91C-4AA6-A8DB-64F03A98467C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22CB41DC-B91C-4AA6-A8DB-64F03A98467C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22CB41DC-B91C-4AA6-A8DB-64F03A98467C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8902019B-5F5A-4693-AC58-90594E3589F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8902019B-5F5A-4693-AC58-90594E3589F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8902019B-5F5A-4693-AC58-90594E3589F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8902019B-5F5A-4693-AC58-90594E3589F0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
