@@ -14,7 +14,7 @@ namespace Grocker
         static void Main(string[] args)
         {
             Watcher watcher = CreateWatcher(args);
-            if (watcher != null)
+            if (watcher == null)
             {
                 return;
             }
@@ -26,20 +26,33 @@ namespace Grocker
 
         private static Watcher CreateWatcher(string[] args)
         {
+            bool showHelp = false;
             Watcher watcher = null;
             try
             {
                 Options options = Options.Parse(args);
-                watcher = CreateWatcherWithOptions(options);
+                if (!options.HelpWanted)
+                {
+                    watcher = CreateWatcherWithOptions(options);
+                }
+                else
+                {
+                    showHelp = true;
+                }
             }
             catch (ArgumentException ex)
             {
                 Console.Error.WriteLine(ex.Message);
-                Console.WriteLine(Options.GetHelpText());
+                showHelp = true;
             }
             catch (ApplicationException ex)
             {
                 Console.Error.WriteLine(ex.Message);
+            }
+
+            if (showHelp)
+            {
+                Console.WriteLine(Options.GetHelpText());
             }
 
             return watcher;

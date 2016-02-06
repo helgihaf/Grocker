@@ -106,18 +106,18 @@ namespace Marson.Grocker.UnitTests
         [TestMethod]
         public void ShouldDetectFileRollover()
         {
-            string[] newLines = new string[]
-            {
-                "[11.11.2015 15:57:05.278] [LAASSI] [LAASSI] [ActivityStart] [Generating token] [c4b769b7-10f4-4889-bc08-a0c7bea81a84] ParentId:[8f572baf-8458-4a9d-8204-5e48d9bb9ce0] ActivityChainId:[f836410c-efd1-444e-9189-2902db1d782d]",
-            };
-
             string[] expectedLines = new string[]
                 {
+                    "++++++ File: ++++++",
                     "[23.10.2015 09:26:44.560] [LAIHEH] [LAIHEH] [ActivityStart] [Generating token] [88f66500-7e1f-4a78-831a-c012a35a656f] ParentId:[269a7a4c-e235-4640-98a7-08b081dc4130] ActivityChainId:[66a7eef2-c314-40dd-a865-038de097ca9f]",
                     "[23.10.2015 09:26:45.482] [LAIHEH] [LAIHEH] [ActivityStop ] [Generating token](925 ms) [88f66500-7e1f-4a78-831a-c012a35a656f] ParentId:[269a7a4c-e235-4640-98a7-08b081dc4130] ActivityChainId:[66a7eef2-c314-40dd-a865-038de097ca9f]",
                     "[23.10.2015 09:26:45.482] [LAIHEH] [LAIHEH] [ActivityStop ] [Issue](973 ms) [269a7a4c-e235-4640-98a7-08b081dc4130] ParentId:[b9327fce-3da4-4182-abbf-f75493f5f4ea] ActivityChainId:[66a7eef2-c314-40dd-a865-038de097ca9f]",
                     "[23.10.2015 09:27:29.877] [LAIHEH] [LAIHEH] [ActivityStart] [Issue] [35cbea68-867d-48e8-9bf2-625d103a6e9d] ParentId:[09dcdfe7-b3d3-4ff2-9187-c197370f1134] ActivityChainId:[09f5ff36-8ab0-419b-b11b-865478da041b]",
-                    "[11.11.2015 15:57:05.278] [LAASSI] [LAASSI] [ActivityStart] [Generating token] [c4b769b7-10f4-4889-bc08-a0c7bea81a84] ParentId:[8f572baf-8458-4a9d-8204-5e48d9bb9ce0] ActivityChainId:[f836410c-efd1-444e-9189-2902db1d782d]",
+                    "++++++ File: ++++++",
+                    "Line2",
+                    "Line3",
+                    "Line4",
+                    "Þórir",
                 };
 
             var tempDir = CreateTempDirectory();
@@ -125,23 +125,27 @@ namespace Marson.Grocker.UnitTests
             var oldLogTempFilePath = Path.Combine(tempDir, "log.old");
             Debug.WriteLine(logTempFilePath);
 
-            var writer = new LineTextWriter(Console.Out);
-            File.Copy(FileNames.LogFile9, logTempFilePath);
-            var watcher = new Watcher();
-            watcher.LineWriter = writer;
-            watcher.DirectoryPath = tempDir;
-            watcher.Filter = "*.log";
-            watcher.LineCount = 4;
-            watcher.Start();
+            string[] writtenLines;
+            using (var stringWriter = new StringWriter())
+            {
+                var writer = new LineTextWriter(stringWriter);
+                File.Copy(FileNames.LogFile9, logTempFilePath);
+                var watcher = new Watcher();
+                watcher.LineWriter = writer;
+                watcher.DirectoryPath = tempDir;
+                watcher.Filter = "*.log";
+                watcher.LineCount = 4;
+                watcher.Start();
 
-            File.Move(logTempFilePath, oldLogTempFilePath);
-            EmulateLog(FileNames.LogFile9, logTempFilePath);
+                File.Move(logTempFilePath, oldLogTempFilePath);
+                EmulateLog(FileNames.LogFile5, logTempFilePath);
 
-            Thread.Sleep(1000);
-            watcher.Stop();
-            //writer.Flush();
-            //writtenLines = writer.ToString().ToLines();
-            //CompareLines(expectedLines, writtenLines);
+                Thread.Sleep(1000);
+                watcher.Stop();
+                writer.Flush();
+                writtenLines = stringWriter.ToString().ToLines();
+            }
+            CompareLines(expectedLines, writtenLines);
         }
 
 

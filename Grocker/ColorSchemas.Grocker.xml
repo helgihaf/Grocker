@@ -6,13 +6,13 @@
     <Filters>
       <ColorFilter>
         <Pattern>\[Warning\]</Pattern>
-        <ForegroundColor>Yellow</ForegroundColor>
-        <BackgroundColor>Black</BackgroundColor>
+        <ForegroundColor>Black</ForegroundColor>
+        <BackgroundColor>DarkYellow</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
         <Pattern>\[Error\]</Pattern>
-        <ForegroundColor>White</ForegroundColor>
-        <BackgroundColor>Red</BackgroundColor>
+        <ForegroundColor>Gray</ForegroundColor>
+        <BackgroundColor>DarkRed</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
         <Pattern>\[Debug\]</Pattern>
@@ -37,8 +37,8 @@
       </ColorFilter>
       <ColorFilter>
         <Pattern>\|ERROR\&gt;</Pattern>
-        <ForegroundColor>White</ForegroundColor>
-        <BackgroundColor>Red</BackgroundColor>
+        <ForegroundColor>Gray</ForegroundColor>
+        <BackgroundColor>DarkRed</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
         <Pattern>\|DEBUG\&gt;</Pattern>
@@ -57,14 +57,14 @@
     <SelectorPattern>^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\s)|(#\w+:)</SelectorPattern>
     <Filters>
       <ColorFilter>
-        <Pattern>POST .*- [3-5]\d\d </Pattern>
-        <ForegroundColor>White</ForegroundColor>
-        <BackgroundColor>Red</BackgroundColor>
+        <Pattern>POST .*- [4-5]\d\d </Pattern>
+        <ForegroundColor>Gray</ForegroundColor>
+        <BackgroundColor>DarkRed</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
-        <Pattern>POST .*- 2\d\d </Pattern>
-        <ForegroundColor>Black</ForegroundColor>
-        <BackgroundColor>Cyan</BackgroundColor>
+        <Pattern>POST .*- 3\d\d </Pattern>
+        <ForegroundColor>Yellow</ForegroundColor>
+        <BackgroundColor>Black</BackgroundColor>
       </ColorFilter>
     </Filters>
   </ColorSchema>

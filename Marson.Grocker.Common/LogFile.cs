@@ -56,8 +56,9 @@ namespace Marson.Grocker.Common
 
         private void IndexLines()
         {
+            encoding = LogReader.DetectEncoding(FilePath);
             lines = new List<Line>();
-            using (var reader = new LogReader(FilePath))
+            using (var reader = new LogReader(FilePath, encoding))
             {
                 encoding = reader.Encoding;
                 IndexLines(reader);
@@ -77,7 +78,7 @@ namespace Marson.Grocker.Common
                 return;
             }
 
-            using (var reader = new LogReader(FilePath, lines[lines.Count - 1].Index, encoding))
+            using (var reader = new LogReader(FilePath, encoding, lines[lines.Count - 1].Index))
             {
                 lines.RemoveAt(lines.Count - 1);
                 IndexLines(reader);
@@ -131,16 +132,6 @@ namespace Marson.Grocker.Common
         internal void LoadLines(int lineIndex, string[] destLines)
         {
             var startLine = Lines[lineIndex];
-            //var totalBytes = 0;
-            //for (int i = 0; i < destLines.Length && i < Lines.Count; i++)
-            //{
-            //    totalBytes += Lines[lineIndex + i].Length;
-            //}
-            //if (totalBytes == 0)
-            //{
-            //    return;
-            //}
-            //var buffer = new byte[totalBytes];
             using (var stream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
             {
                 stream.Seek(startLine.Index, SeekOrigin.Begin);
@@ -153,8 +144,6 @@ namespace Marson.Grocker.Common
                     }
                 }
             }
-
-
         }
 
         private int LinesToArray(List<string> blockLines, string[] destLines)

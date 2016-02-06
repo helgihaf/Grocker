@@ -43,9 +43,10 @@ namespace Grocker
             options.DirectoryPath = parameters.DetachPositional();
             options.Filter = parameters.DetachNamed("f");
             options.EnableColorSchema = !parameters.DetachNamedBool("nc");
-            if (options.EnableColorSchema)
+            options.ColorSchemaName = parameters.DetachNamed("c");
+            if (!options.EnableColorSchema && !string.IsNullOrEmpty(options.ColorSchemaName))
             {
-                options.ColorSchemaName = parameters.DetachNamed("c");
+                throw new ArgumentException("Options nc and c are incompatible with each other");
             }
 
             return options;
@@ -88,7 +89,6 @@ namespace Grocker
             sb.AppendLine("    Color schema. Default is auto detect. Incompatible with -nc");
             sb.AppendLine("  [-nc]");
             sb.AppendLine("    No color schema. Incompatible with -c");
-            sb.AppendLine();
             return sb.ToString();
         }
     }

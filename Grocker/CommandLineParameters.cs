@@ -97,7 +97,7 @@ namespace Grocker
                     {
                         named.Add(lastNamedParameter, null);
                     }
-                    lastNamedParameter = arg;
+                    lastNamedParameter = StripNameMarker(arg);
                 }
                 else
                 {
@@ -126,6 +126,11 @@ namespace Grocker
             {
                 named.Add(lastNamedParameter, null);
             }
+        }
+
+        private static string StripNameMarker(string arg)
+        {
+            return arg.Substring(1);
         }
 
         private static bool SplitNameValue(string arg, out string name, out string value)

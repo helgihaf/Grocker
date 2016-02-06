@@ -12,31 +12,35 @@ namespace Marson.Grocker.Common
         private readonly string filePath;
         private Stream stream;
 
-        private bool isBigEndian;
-
         private long index;
         private int currentByte;
 
-        private LogReader(string filePath, bool startRead)
+        public static Encoding DetectEncoding(string filePath)
         {
-            this.filePath = filePath;
-            stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
-            if (startRead)
+            using (var stream = GetStream(filePath))
+            using (var reader = new StreamReader(stream, true))
             {
-                NextByte();
-                DetectEncoding();
+                reader.ReadLine();
+                return reader.CurrentEncoding;
             }
         }
 
-        public LogReader(string filePath) : this(filePath, true)
+        private static FileStream GetStream(string filePath)
         {
+            return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
         }
 
-        public LogReader(string filePath, long index, Encoding encoding) : this(filePath, false)
+        public LogReader(string filePath, Encoding encoding, long index = 0)
         {
-            this.index = index;
+            this.filePath = filePath;
             this.Encoding = encoding;
-            stream.Seek(index, SeekOrigin.Begin);
+            this.index = index;
+
+            stream = GetStream(filePath);
+            if (index > 0)
+            {
+                stream.Seek(index, SeekOrigin.Begin);
+            }
             NextByte();
         }
 
@@ -120,13 +124,19 @@ namespace Marson.Grocker.Common
             return b == 10;
         }
 
-        public void NextByte()
+        private void NextByte()
         {
             currentByte = stream.ReadByte();
             if (currentByte >= 0)
             {
                 index++;
             }
+        }
+
+        private void Seek(long indexFromBegin)
+        {
+            stream.Seek(indexFromBegin, SeekOrigin.Begin);
+            index = indexFromBegin;
         }
 
         public long Index
@@ -144,46 +154,54 @@ namespace Marson.Grocker.Common
 
         public Encoding Encoding { get; private set; }
 
-        private void DetectEncoding()
-        {
-            this.Encoding = Encoding.ASCII;
-            if (CurrentByte == 0xEF)
-            {
-                NextByte();
-                if (CurrentByte == 0xBB)
-                {
-                    NextByte();
-                    if (CurrentByte == 0xBF)
-                    {
-                        this.Encoding = Encoding.UTF8;
-                        NextByte();
-                    }
-                }
-            }
-            else if (CurrentByte == 0xFE)
-            {
-                NextByte();
-                if (CurrentByte == 0xFF)
-                {
-                    this.Encoding = Encoding.Unicode;
-                    isBigEndian = true;
-                    NextByte();
-                }
-            }
-            else if (CurrentByte == 0xFF)
-            {
-                NextByte();
-                if (CurrentByte == 0xFE)
-                {
-                    this.Encoding = Encoding.Unicode;
-                    isBigEndian = false;
-                    NextByte();
-                }
-            }
-        }
+        //private Encoding CheckBOM()
+        //{
+        //    Encoding result = null;
+        //    long startingIndex = index;
 
+        //    if (CurrentByte == 0xEF)
+        //    {
+        //        NextByte();
+        //        if (CurrentByte == 0xBB)
+        //        {
+        //            NextByte();
+        //            if (CurrentByte == 0xBF)
+        //            {
+        //                result = Encoding.UTF8;
+        //                NextByte();
+        //            }
+        //        }
+        //    }
+        //    else if (CurrentByte == 0xFE)
+        //    {
+        //        NextByte();
+        //        if (CurrentByte == 0xFF)
+        //        {
+        //            result = Encoding.Unicode;
+        //            isBigEndian = true;
+        //            NextByte();
+        //        }
+        //    }
+        //    else if (CurrentByte == 0xFF)
+        //    {
+        //        NextByte();
+        //        if (CurrentByte == 0xFE)
+        //        {
+        //            result = Encoding.Unicode;
+        //            isBigEndian = false;
+        //            NextByte();
+        //        }
+        //    }
 
+        //    if (result == null)
+        //    {
+        //        if (index != startingIndex)
+        //        {
+        //            Seek(startingIndex);
+        //        }
+        //    }
 
-
+        //    return result;
+        //}
     }
 }
