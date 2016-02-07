@@ -5,16 +5,42 @@ using Marson.Grocker.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace Marson.Grocker.UnitTests
 {
     [TestClass]
     public class WatcherTests
     {
+        private static TestData testData;
+        private static string logFile196407;
+        private static string logFile9;
+        private static string logFile5;
+
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            testData = new TestData();
+            logFile196407 = testData.GetLogFile(196407);
+            logFile9 = testData.GetLogFile(9);
+            logFile5 = testData.GetLogFile(5);
+        }
+
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            if (testData != null)
+            {
+                testData.Dispose();
+                testData = null;
+            }
+        }
+
+
         [TestMethod]
         public void ShouldWriteTail()
         {
-            var logFile = LogFile.LoadFrom(FileNames.LogFile196407);
+            var logFile = LogFile.LoadFrom(logFile196407);
 
             int logLineIndex = logFile.Lines.Count - 80;
             var logWindow = logFile.CreateWindow();
@@ -29,148 +55,155 @@ namespace Marson.Grocker.UnitTests
         [TestMethod]
         public void ShouldWriteInitialTail()
         {
-            string[] expectedLines = new string[]
-                {
-                    "++++++ File: ++++++",
-                    "[23.10.2015 09:26:44.560] [LAIHEH] [LAIHEH] [ActivityStart] [Generating token] [88f66500-7e1f-4a78-831a-c012a35a656f] ParentId:[269a7a4c-e235-4640-98a7-08b081dc4130] ActivityChainId:[66a7eef2-c314-40dd-a865-038de097ca9f]",
-                    "[23.10.2015 09:26:45.482] [LAIHEH] [LAIHEH] [ActivityStop ] [Generating token](925 ms) [88f66500-7e1f-4a78-831a-c012a35a656f] ParentId:[269a7a4c-e235-4640-98a7-08b081dc4130] ActivityChainId:[66a7eef2-c314-40dd-a865-038de097ca9f]",
-                    "[23.10.2015 09:26:45.482] [LAIHEH] [LAIHEH] [ActivityStop ] [Issue](973 ms) [269a7a4c-e235-4640-98a7-08b081dc4130] ParentId:[b9327fce-3da4-4182-abbf-f75493f5f4ea] ActivityChainId:[66a7eef2-c314-40dd-a865-038de097ca9f]",
-                    "[23.10.2015 09:27:29.877] [LAIHEH] [LAIHEH] [ActivityStart] [Issue] [35cbea68-867d-48e8-9bf2-625d103a6e9d] ParentId:[09dcdfe7-b3d3-4ff2-9187-c197370f1134] ActivityChainId:[09f5ff36-8ab0-419b-b11b-865478da041b]",
-                };
+            const int LogFileLineCount = 9;
 
-            var filePath = FileNames.LogFile9;
-            var watcher = new Watcher();
-            string[] writtenLines;
-            using (var stringWriter = new StringWriter())
+            var filePath = logFile9;
+            using (var watcher = new Watcher())
             {
-                var writer = new LineTextWriter(stringWriter);
-                watcher.LineWriter = writer;
-                watcher.DirectoryPath = Path.GetDirectoryName(filePath);
-                watcher.Filter = Path.GetFileName(filePath);
-                watcher.LineCount = 4;
-                watcher.Start();
-                writer.Flush();
-                writtenLines = stringWriter.ToString().ToLines();
+                string[] writtenLines;
+                using (var stringWriter = new StringWriter())
+                {
+                    var writer = new LineTextWriter(stringWriter);
+                    watcher.LineWriter = writer;
+                    watcher.DirectoryPath = Path.GetDirectoryName(filePath);
+                    watcher.Filter = Path.GetFileName(filePath);
+                    watcher.LineCount = 4;
+                    watcher.Start();
+                    writer.Flush();
+                    writtenLines = stringWriter.ToString().ToLines();
+                }
+                writtenLines.ForEach(i => Debug.WriteLine(i));
+
+                var expectedLines = CreateLineListWithFileMarker(
+                    TestData.LoadLines(logFile9,
+                                       LogFileLineCount - watcher.LineCount,
+                                       watcher.LineCount));
+                CompareLines(expectedLines.ToArray(), writtenLines);
             }
-            writtenLines.ForEach(i => Debug.WriteLine(i));
-            CompareLines(expectedLines, writtenLines);
+        }
+
+        private List<string> CreateLineListWithFileMarker(string[] strings)
+        {
+            var list = new List<string>();
+            list.Add("++++++ File: ++++++");
+            list.AddRange(strings);
+            return list;
         }
 
         [TestMethod]
         public void ShouldDetectNewWrite()
         {
-            string[] newLines = new string[]
-            {
-                "[11.11.2015 15:57:05.278] [LAASSI] [LAASSI] [ActivityStart] [Generating token] [c4b769b7-10f4-4889-bc08-a0c7bea81a84] ParentId:[8f572baf-8458-4a9d-8204-5e48d9bb9ce0] ActivityChainId:[f836410c-efd1-444e-9189-2902db1d782d]",
-            };
+            const int LogFileLineCount = 9;
+            string[] newLines = testData.CreateLogLines(1);
 
-            string[] expectedLines = new string[]
-                {
-                    "++++++ File: ++++++",
-                    "[23.10.2015 09:26:44.560] [LAIHEH] [LAIHEH] [ActivityStart] [Generating token] [88f66500-7e1f-4a78-831a-c012a35a656f] ParentId:[269a7a4c-e235-4640-98a7-08b081dc4130] ActivityChainId:[66a7eef2-c314-40dd-a865-038de097ca9f]",
-                    "[23.10.2015 09:26:45.482] [LAIHEH] [LAIHEH] [ActivityStop ] [Generating token](925 ms) [88f66500-7e1f-4a78-831a-c012a35a656f] ParentId:[269a7a4c-e235-4640-98a7-08b081dc4130] ActivityChainId:[66a7eef2-c314-40dd-a865-038de097ca9f]",
-                    "[23.10.2015 09:26:45.482] [LAIHEH] [LAIHEH] [ActivityStop ] [Issue](973 ms) [269a7a4c-e235-4640-98a7-08b081dc4130] ParentId:[b9327fce-3da4-4182-abbf-f75493f5f4ea] ActivityChainId:[66a7eef2-c314-40dd-a865-038de097ca9f]",
-                    "[23.10.2015 09:27:29.877] [LAIHEH] [LAIHEH] [ActivityStart] [Issue] [35cbea68-867d-48e8-9bf2-625d103a6e9d] ParentId:[09dcdfe7-b3d3-4ff2-9187-c197370f1134] ActivityChainId:[09f5ff36-8ab0-419b-b11b-865478da041b]",
-                    "[11.11.2015 15:57:05.278] [LAASSI] [LAASSI] [ActivityStart] [Generating token] [c4b769b7-10f4-4889-bc08-a0c7bea81a84] ParentId:[8f572baf-8458-4a9d-8204-5e48d9bb9ce0] ActivityChainId:[f836410c-efd1-444e-9189-2902db1d782d]",
-                };
-
-            var tempDir = CreateTempDirectory();
+            var tempDir = TestData.CreateTempDirectory();
             var tempFileName = Path.Combine(tempDir, "log.log");
             Debug.WriteLine(tempFileName);
-            using (var stringWriter = new StringWriter())
+            using (var watcher = new Watcher())
             {
-                var writer = new LineTextWriter(stringWriter);
-                string[] writtenLines;
-                var watcher = new Watcher();
-                using (var logger = new LoggerEmulator(FileNames.LogFile9, tempFileName))
+                using (var stringWriter = new StringWriter())
                 {
-                    logger.WriteToEnd();
+                    var writer = new LineTextWriter(stringWriter);
+                    string[] writtenLines;
+                    using (var logger = new LoggerEmulator(logFile9, tempFileName))
+                    {
+                        logger.WriteToEnd();
 
-                    watcher.LineWriter = writer;
-                    watcher.DirectoryPath = tempDir;
-                    watcher.Filter = "*.log";
-                    watcher.LineCount = 4;
-                    watcher.Start();
+                        watcher.LineWriter = writer;
+                        watcher.DirectoryPath = tempDir;
+                        watcher.Filter = "*.log";
+                        watcher.LineCount = 4;
+                        watcher.Start();
 
-                    logger.WriteLines(newLines);
+                        logger.WriteLines(newLines);
+                    }
+
+                    Thread.Sleep(1000);
+                    watcher.Stop();
+                    writer.Flush();
+                    writtenLines = stringWriter.ToString().ToLines();
+
+                    var expectedLines = CreateLineListWithFileMarker(
+                        TestData.LoadLines(logFile9,
+                                           LogFileLineCount - watcher.LineCount,
+                                           watcher.LineCount));
+                    expectedLines.AddRange(newLines);
+                    CompareLines(expectedLines.ToArray(), writtenLines);
                 }
-
-                Thread.Sleep(1000);
-                watcher.Stop();
-                writer.Flush();
-                writtenLines = stringWriter.ToString().ToLines();
-                CompareLines(expectedLines, writtenLines);
             }
         }
 
         [TestMethod]
         public void ShouldDetectFileRollover()
         {
-            string[] expectedLines = new string[]
-                {
-                    "++++++ File: ++++++",
-                    "[23.10.2015 09:26:44.560] [LAIHEH] [LAIHEH] [ActivityStart] [Generating token] [88f66500-7e1f-4a78-831a-c012a35a656f] ParentId:[269a7a4c-e235-4640-98a7-08b081dc4130] ActivityChainId:[66a7eef2-c314-40dd-a865-038de097ca9f]",
-                    "[23.10.2015 09:26:45.482] [LAIHEH] [LAIHEH] [ActivityStop ] [Generating token](925 ms) [88f66500-7e1f-4a78-831a-c012a35a656f] ParentId:[269a7a4c-e235-4640-98a7-08b081dc4130] ActivityChainId:[66a7eef2-c314-40dd-a865-038de097ca9f]",
-                    "[23.10.2015 09:26:45.482] [LAIHEH] [LAIHEH] [ActivityStop ] [Issue](973 ms) [269a7a4c-e235-4640-98a7-08b081dc4130] ParentId:[b9327fce-3da4-4182-abbf-f75493f5f4ea] ActivityChainId:[66a7eef2-c314-40dd-a865-038de097ca9f]",
-                    "[23.10.2015 09:27:29.877] [LAIHEH] [LAIHEH] [ActivityStart] [Issue] [35cbea68-867d-48e8-9bf2-625d103a6e9d] ParentId:[09dcdfe7-b3d3-4ff2-9187-c197370f1134] ActivityChainId:[09f5ff36-8ab0-419b-b11b-865478da041b]",
-                    "++++++ File: ++++++",
-                    "Line2",
-                    "Line3",
-                    "Line4",
-                    "Þórir",
-                };
+            const int FirstLogFileLineCount = 9;
+            const int SecondLogFileLineCount = 5;
 
-            var tempDir = CreateTempDirectory();
+            var tempDir = TestData.CreateTempDirectory();
             var logTempFilePath = Path.Combine(tempDir, "log.log");
             var oldLogTempFilePath = Path.Combine(tempDir, "log.old");
             Debug.WriteLine(logTempFilePath);
 
             string[] writtenLines;
-            using (var stringWriter = new StringWriter())
+            using (var watcher = new Watcher())
             {
-                var writer = new LineTextWriter(stringWriter);
-                File.Copy(FileNames.LogFile9, logTempFilePath);
-                var watcher = new Watcher();
-                watcher.LineWriter = writer;
-                watcher.DirectoryPath = tempDir;
-                watcher.Filter = "*.log";
-                watcher.LineCount = 4;
-                watcher.Start();
+                using (var stringWriter = new StringWriter())
+                {
+                    var writer = new LineTextWriter(stringWriter);
+                    File.Copy(logFile9, logTempFilePath);
+                    watcher.LineWriter = writer;
+                    watcher.DirectoryPath = tempDir;
+                    watcher.Filter = "*.log";
+                    watcher.LineCount = 4;
+                    watcher.Start();
 
-                File.Move(logTempFilePath, oldLogTempFilePath);
-                EmulateLog(FileNames.LogFile5, logTempFilePath);
+                    File.Move(logTempFilePath, oldLogTempFilePath);
+                    EmulateLog(logFile5, logTempFilePath);
 
-                Thread.Sleep(1000);
-                watcher.Stop();
-                writer.Flush();
-                writtenLines = stringWriter.ToString().ToLines();
+                    Thread.Sleep(1000);
+                    watcher.Stop();
+                    writer.Flush();
+                    writtenLines = stringWriter.ToString().ToLines();
+                }
+
+                var firstLines = CreateLineListWithFileMarker(
+                    TestData.LoadLines(logFile9,
+                           FirstLogFileLineCount - watcher.LineCount,
+                           watcher.LineCount));
+                var secondLines = CreateLineListWithFileMarker(
+                    TestData.LoadLines(logFile5,
+                           SecondLogFileLineCount - watcher.LineCount,
+                           watcher.LineCount));
+                var expectedLines = firstLines.Concat(secondLines).ToArray();
+                CompareLines(expectedLines, writtenLines);
             }
-            CompareLines(expectedLines, writtenLines);
         }
 
 
         [TestMethod]
         public void ShouldDetectFileDelete()
         {
-            var tempDir = CreateTempDirectory();
+            var tempDir = TestData.CreateTempDirectory();
             var logTempFilePath = Path.Combine(tempDir, "log.log");
             Debug.WriteLine(logTempFilePath);
 
-            File.Copy(FileNames.LogFile9, logTempFilePath);
-            var watcher = new Watcher();
-            watcher.LineWriter = new LineTextWriter(Console.Out);
-            watcher.DirectoryPath = tempDir;
-            watcher.Filter = "*.log";
-            watcher.LineCount = 4;
-            watcher.Start();
+            File.Copy(logFile9, logTempFilePath);
+            using (var watcher = new Watcher())
+            {
+                watcher.LineWriter = new LineTextWriter(Console.Out);
+                watcher.DirectoryPath = tempDir;
+                watcher.Filter = "*.log";
+                watcher.LineCount = 4;
+                watcher.Start();
 
-            File.Delete(logTempFilePath);
+                File.Delete(logTempFilePath);
 
-            Thread.Sleep(1000);
-            watcher.Stop();
-            //writer.Flush();
-            //writtenLines = writer.ToString().ToLines();
-            //CompareLines(expectedLines, writtenLines);
+                Thread.Sleep(1000);
+                watcher.Stop();
+                //writer.Flush();
+                //writtenLines = writer.ToString().ToLines();
+                //CompareLines(expectedLines, writtenLines);
+            }
         }
 
         private void EmulateLog(string sourceFilePath, string targetFilePath)
@@ -181,13 +214,6 @@ namespace Marson.Grocker.UnitTests
             }
         }
 
-        private string CreateTempDirectory()
-        {
-            var dateTimeDir = DateTime.Now.ToString("yyyy-MM-ddTHH.mm.ss.fff");
-            var tempPath = Path.Combine(Path.GetTempPath(), dateTimeDir);
-            Directory.CreateDirectory(tempPath);
-            return tempPath;
-        }
 
         private string CreateIsolatedTempCopy(string logFilePath)
         {
@@ -225,7 +251,7 @@ namespace Marson.Grocker.UnitTests
         //[TestMethod]
         //public void ShouldPeek()
         //{
-        //    string filePath = FileNames.LogFile9;
+        //    string filePath = logFile9;
         //    using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
         //    using (var reader = new StreamReader(stream))
         //    {

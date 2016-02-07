@@ -56,11 +56,13 @@
   <ItemGroup>
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="ExtensionsAndUtils.cs" />
-    <Compile Include="FileNames.cs" />
     <Compile Include="IndexTests.cs" />
     <Compile Include="LoggerEmulator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CrazyTest.cs" />
+    <Compile Include="Statistics.cs" />
+    <Compile Include="TestData.cs" />
+    <Compile Include="TestLineCreator.cs" />
     <Compile Include="WatcherTests.cs" />
     <Compile Include="WindowTests.cs" />
   </ItemGroup>
@@ -69,35 +71,6 @@
       <Project>{b968511c-b574-445d-a39a-2da04f43c617}</Project>
       <Name>Marson.Grocker.Common</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="TestData\LogFile196407.log">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\LogFile5.log">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ASCIIC1252.log">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\UTF16-BigEndian.log">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\UTF16-eq-Unicode.log">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\UTF8.log">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\UTF8-BOM.log">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\LogFile9.log">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\LogFile100.log">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

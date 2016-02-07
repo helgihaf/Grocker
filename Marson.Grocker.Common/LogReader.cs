@@ -133,12 +133,6 @@ namespace Marson.Grocker.Common
             }
         }
 
-        private void Seek(long indexFromBegin)
-        {
-            stream.Seek(indexFromBegin, SeekOrigin.Begin);
-            index = indexFromBegin;
-        }
-
         public long Index
         {
             get { return index >= 0 ? index - 1 : index; }
@@ -153,55 +147,5 @@ namespace Marson.Grocker.Common
         }
 
         public Encoding Encoding { get; private set; }
-
-        //private Encoding CheckBOM()
-        //{
-        //    Encoding result = null;
-        //    long startingIndex = index;
-
-        //    if (CurrentByte == 0xEF)
-        //    {
-        //        NextByte();
-        //        if (CurrentByte == 0xBB)
-        //        {
-        //            NextByte();
-        //            if (CurrentByte == 0xBF)
-        //            {
-        //                result = Encoding.UTF8;
-        //                NextByte();
-        //            }
-        //        }
-        //    }
-        //    else if (CurrentByte == 0xFE)
-        //    {
-        //        NextByte();
-        //        if (CurrentByte == 0xFF)
-        //        {
-        //            result = Encoding.Unicode;
-        //            isBigEndian = true;
-        //            NextByte();
-        //        }
-        //    }
-        //    else if (CurrentByte == 0xFF)
-        //    {
-        //        NextByte();
-        //        if (CurrentByte == 0xFE)
-        //        {
-        //            result = Encoding.Unicode;
-        //            isBigEndian = false;
-        //            NextByte();
-        //        }
-        //    }
-
-        //    if (result == null)
-        //    {
-        //        if (index != startingIndex)
-        //        {
-        //            Seek(startingIndex);
-        //        }
-        //    }
-
-        //    return result;
-        //}
     }
 }

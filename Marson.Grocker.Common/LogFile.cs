@@ -103,30 +103,9 @@ namespace Marson.Grocker.Common
             }
         }
 
-        private void HandleLineLength(int length)
-        {
-            if (length > MaxAllowedLineLength)
-                throw new FormatException(string.Format("Maximum line length of {0} exceeded in file, line length {1}.", MaxAllowedLineLength, length));
-
-            if (maxLineLength < length)
-                maxLineLength = length;
-        }
-
         public void Update()
         {
             UpdateIndex();
-        }
-
-        private string ClipText(string text)
-        {
-            if (text != null)
-            {
-                return text.Substring(0, Math.Min(text.Length, 25));
-            }
-            else
-            {
-                return "";
-            }
         }
 
         internal void LoadLines(int lineIndex, string[] destLines)
@@ -145,17 +124,6 @@ namespace Marson.Grocker.Common
                 }
             }
         }
-
-        private int LinesToArray(List<string> blockLines, string[] destLines)
-        {
-            int index;
-            for (index = 0; index < blockLines.Count && index < destLines.Length; index++)
-            {
-                destLines[index] = blockLines[index];
-            }
-            return index;
-        }
-
 
     }
 }

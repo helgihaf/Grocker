@@ -84,7 +84,7 @@ namespace Marson.Grocker.Common
         /// <summary>
         /// Switch controlling whether to switch to a new file if one is created.
         /// </summary>
-        public bool AlwaysShowLates { get; set; }
+        //public bool AlwaysShowLates { get; set; }
 
         /// <summary>
         /// Number of lines to read from the end of the file. Default 100.
