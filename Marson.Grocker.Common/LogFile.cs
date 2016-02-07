@@ -67,7 +67,12 @@ namespace Marson.Grocker.Common
 
         private void AddLine(long currentLineIndex, LogReader reader)
         {
-            lines.Add(new Line { Index = currentLineIndex, Length = (int)(reader.Index - currentLineIndex) });
+            var line = new Line { Index = currentLineIndex, Length = (int)(reader.Index - currentLineIndex) };
+            lines.Add(line);
+            if (line.Length > maxLineLength)
+            {
+                maxLineLength = line.Length;
+            }
         }
 
         private void UpdateIndex()
