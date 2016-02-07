@@ -158,21 +158,81 @@ namespace Marson.Grocker.Common
         {
             if (eventText != null && logFile != null && !IsCurrentLogFile(filePath))
             {
-                LineWriter.WriteLine(string.Format(">>>>>> {0} <<<<<<", eventText));
+                WriteEvent(eventText);
             }
 
             if (logFile == null)
             {
-                LineWriter.WriteLine(string.Format("++++++ File: {0} ++++++", filePath));
+                WriteNewFilePathEvent(filePath);
             }
 
-            string[] lines = ReadLines(filePath);
-            if (lines != null)
+            CopyLinesToWriter(filePath);
+        }
+
+        private void WriteNewFilePathEvent(string filePath)
+        {
+            LineWriter.WriteLine(string.Format("++++++ File: {0} ++++++", filePath));
+        }
+
+        private void WriteEvent(string eventText)
+        {
+            LineWriter.WriteLine(string.Format(">>>>>> {0} <<<<<<", eventText));
+        }
+
+        private void CopyLinesToWriter(string filePath)
+        {
+            if (!IsCurrentLogFile(filePath))
             {
-                LineWriter.WriteLines(lines);
-                logLineIndex += lines.Length;
+                Debug.WriteLine("Selecting " + filePath);
+                WriteNewFile(filePath);
+                Debug.WriteLine("  logLineIndex=" + logLineIndex);
+            }
+            else
+            {
+                Debug.WriteLine("Continuing with " + filePath + " at logLineIndex = " + logLineIndex);
+                WriteCurrentFile();
+                Debug.WriteLine("  logLineIndex=" + logLineIndex);
             }
         }
+
+        private void WriteNewFile(string filePath)
+        {
+            // New file, load it
+            logFile = LogFile.LoadFrom(filePath);
+            if (logFile.Lines.Count == 0)
+            {
+                return;
+            }
+
+            // Output the last LineCount (or less) lines of the file
+            var linesToCopy = Math.Min(logFile.Lines.Count, LineCount);
+            logLineIndex = Math.Max(0, logFile.Lines.Count - LineCount);
+            logFile.CopyLines(logLineIndex, LineWriter, linesToCopy);
+            logLineIndex = logFile.Lines.Count;
+        }
+
+        private void WriteCurrentFile()
+        {
+            // We are continuing from an existing file. Instead of outputing the last LineCount
+            // lines of the file, we output everything written to the file since we last
+            // output something.
+            Debug.Assert(logLineIndex == logFile.Lines.Count);
+
+            logFile.Update();
+            var linesToCopy = logFile.Lines.Count - logLineIndex;
+            if (linesToCopy > 0)
+            {
+                logFile.CopyLines(logLineIndex, LineWriter, linesToCopy);
+                logLineIndex += linesToCopy;
+            }
+            else if (linesToCopy < 0)
+            {
+                // File has been re-written or changed drastically. Reset the whole thing.
+                logFile = null;
+                EnqueueEvent(new WatcherEvent { EventType = WatcherEventType.Create });
+            }
+        }
+
 
         private string[] ReadLines(string filePath)
         {
@@ -296,9 +356,11 @@ namespace Marson.Grocker.Common
                 case WatcherEventType.Rename:
                     if (IsCurrentLogFile(renamedEventArgs.OldFullPath) || IsCurrentLogFile(renamedEventArgs.FullPath))
                     {
-                        // A new file just got renamed, we can no longer assume that an existing file name is the same file we were watching
+                        // A file just got renamed, we can no longer assume that an existing file name is the same file we were watching.
+                        // We don't want to select a new file right away because we might discover a "new" file that is the current file
+                        // renamed. We will rely on other file events to notify us of changes, be it the renamed file or a new file.
                         logFile = null;
-                        FindAndTail("File renamed");
+                        WriteEvent("File renamed");
                     }
                     break;
                 case WatcherEventType.Delete:

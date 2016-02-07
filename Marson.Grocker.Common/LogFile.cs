@@ -130,5 +130,21 @@ namespace Marson.Grocker.Common
             }
         }
 
+        internal void CopyLines(int lineIndex, ILineWriter lineWriter, int lineCount)
+        {
+            var startLine = Lines[lineIndex];
+            using (var stream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            {
+                stream.Seek(startLine.Index, SeekOrigin.Begin);
+                using (var reader = new StreamReader(stream, encoding))
+                {
+                    string line;
+                    for (int i = 0; (line = reader.ReadLine()) != null && i < lineCount; i++)
+                    {
+                        lineWriter.WriteLine(line);
+                    }
+                }
+            }
+        }
     }
 }

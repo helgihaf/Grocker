@@ -139,10 +139,20 @@ namespace Marson.Grocker.UnitTests
             const int FirstLogFileLineCount = 9;
             const int SecondLogFileLineCount = 5;
 
+            // Write 9 lines in file1
+            // Start watcher, will output 4 last lines of file 1
+            // Rename file1 to file1old
+            // Write new 5 lines to a new file1
+            // Expected result:
+            //   1 header
+            //   4 lines from original file 1
+            //   1 header
+            //   4 lines from new file 1
             var tempDir = TestData.CreateTempDirectory();
             var logTempFilePath = Path.Combine(tempDir, "log.log");
             var oldLogTempFilePath = Path.Combine(tempDir, "log.old");
-            Debug.WriteLine(logTempFilePath);
+            Debug.WriteLine("main file: " +logTempFilePath);
+            Debug.WriteLine("old file: " + oldLogTempFilePath);
 
             string[] writtenLines;
             using (var watcher = new Watcher())
@@ -165,11 +175,14 @@ namespace Marson.Grocker.UnitTests
                     writer.Flush();
                     writtenLines = stringWriter.ToString().ToLines();
                 }
+                Debug.WriteLine("Written lines:");
+                DumpLines(writtenLines);
 
                 var firstLines = CreateLineListWithFileMarker(
                     TestData.LoadLines(logFile9,
                            FirstLogFileLineCount - watcher.LineCount,
                            watcher.LineCount));
+                firstLines.Add(">>>>>> <<<<<<");
                 var secondLines = CreateLineListWithFileMarker(
                     TestData.LoadLines(logFile5,
                            SecondLogFileLineCount - watcher.LineCount,
@@ -228,25 +241,27 @@ namespace Marson.Grocker.UnitTests
         private static void CompareLines(string[] expected, string[] actual)
         {
             const string FileNameMarker = "++++++ ";
+            const string EventMarker = ">>>>>";
             Assert.AreEqual(expected.Length, actual.Length);
             for (int i = 0; i < expected.Length; i++)
             {
                 var exp = expected[i];
                 var act = actual[i];
-                if (!(exp.StartsWith(FileNameMarker) && act.StartsWith(FileNameMarker)))
+                if (!(exp.StartsWith(FileNameMarker) && act.StartsWith(FileNameMarker)) &&
+                    !(exp.StartsWith(EventMarker) && act.StartsWith(EventMarker)))
                 {
                     Assert.AreEqual(exp, act, "i = " + i.ToString());
                 }
             }
         }
 
-        //private void DumpLines(string[] lines)
-        //{
-        //    foreach (var line in lines)
-        //    {
-        //        Debug.WriteLine(line);
-        //    }
-        //}
+        private void DumpLines(string[] lines)
+        {
+            foreach (var line in lines)
+            {
+                Debug.WriteLine(line);
+            }
+        }
 
         //[TestMethod]
         //public void ShouldPeek()
