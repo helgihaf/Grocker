@@ -6,13 +6,13 @@
     <Filters>
       <ColorFilter>
         <Pattern>\[Warning\]</Pattern>
-        <ForegroundColor>Black</ForegroundColor>
-        <BackgroundColor>DarkYellow</BackgroundColor>
+        <ForegroundColor>DarkYellow</ForegroundColor>
+        <BackgroundColor>Black</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
         <Pattern>\[Error\]</Pattern>
-        <ForegroundColor>Gray</ForegroundColor>
-        <BackgroundColor>DarkRed</BackgroundColor>
+        <ForegroundColor>White</ForegroundColor>
+        <BackgroundColor>Red</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
         <Pattern>\[Debug\]</Pattern>
@@ -32,13 +32,13 @@
     <Filters>
       <ColorFilter>
         <Pattern>\|WARNING\&gt;</Pattern>
-        <ForegroundColor>Black</ForegroundColor>
-        <BackgroundColor>Yellow</BackgroundColor>
+        <ForegroundColor>DarkYellow</ForegroundColor>
+        <BackgroundColor>Black</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
         <Pattern>\|ERROR\&gt;</Pattern>
-        <ForegroundColor>Gray</ForegroundColor>
-        <BackgroundColor>DarkRed</BackgroundColor>
+        <ForegroundColor>White</ForegroundColor>
+        <BackgroundColor>Red</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
         <Pattern>\|DEBUG\&gt;</Pattern>
@@ -47,8 +47,8 @@
       </ColorFilter>
       <ColorFilter>
         <Pattern>\|INFO\&gt;</Pattern>
-        <ForegroundColor>Black</ForegroundColor>
-        <BackgroundColor>Cyan</BackgroundColor>
+        <ForegroundColor>Cyan</ForegroundColor>
+        <BackgroundColor>Black</BackgroundColor>
       </ColorFilter>
     </Filters>
   </ColorSchema>
@@ -58,12 +58,12 @@
     <Filters>
       <ColorFilter>
         <Pattern>POST .*- [4-5]\d\d </Pattern>
-        <ForegroundColor>Gray</ForegroundColor>
-        <BackgroundColor>DarkRed</BackgroundColor>
+        <ForegroundColor>White</ForegroundColor>
+        <BackgroundColor>Red</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
         <Pattern>POST .*- 3\d\d </Pattern>
-        <ForegroundColor>Yellow</ForegroundColor>
+        <ForegroundColor>DarkYellow</ForegroundColor>
         <BackgroundColor>Black</BackgroundColor>
       </ColorFilter>
     </Filters>

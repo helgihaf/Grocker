@@ -48,6 +48,10 @@ namespace Grocker
 
         public void WriteLine(string line)
         {
+            if (autoDetectionPending)
+            {
+                TryDetectSchema(new[] { line });
+            }
             using (var colorScope = CreateColorScope(line))
             {
                 implTextWriter.WriteLine(line);

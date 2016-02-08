@@ -40,7 +40,7 @@ namespace GrockerWpf
             gridView.Columns[1].Width = logFile.MaxLineLength * listView.FontSize;
 
             var provider = new LogLinesItemProvider(logFile);
-            DataContext = new AsyncVirtualizingCollection<ModelLine>(provider, PageSize, PageTimeout * 1000);
+            DataContext = new VirtualizingCollection<ModelLine>(provider, PageSize, PageTimeout * 1000);
 
             SetStatusTotalLines(logFile.Lines.Count);
             SetStatusProgress(false);

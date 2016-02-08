@@ -57,7 +57,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AsyncVirtualizingCollection.cs" />
     <Compile Include="LogControl2.xaml.cs">
       <DependentUpon>LogControl2.xaml</DependentUpon>
     </Compile>
