@@ -62,14 +62,7 @@
     </Compile>
     <Compile Include="LogLinesItemProvider.cs" />
     <Compile Include="ModelLine.cs" />
-    <Compile Include="UserControl1.xaml.cs">
-      <DependentUpon>UserControl1.xaml</DependentUpon>
-    </Compile>
     <Compile Include="VirtualizingCollection.cs" />
-    <Page Include="LogControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="LogControl2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -83,17 +76,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IItemsProvider.cs" />
-    <Compile Include="LogControl.xaml.cs">
-      <DependentUpon>LogControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="UserControl1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
