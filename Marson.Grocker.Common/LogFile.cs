@@ -146,5 +146,21 @@ namespace Marson.Grocker.Common
                 }
             }
         }
+
+        internal StreamReader CreateReader(int lineIndex)
+        {
+            var startLine = Lines[lineIndex];
+            var stream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+            try
+            {
+                stream.Seek(startLine.Index, SeekOrigin.Begin);
+                return new StreamReader(stream, encoding);
+            }
+            catch
+            {
+                stream.Dispose();
+                throw;
+            }
+        }
     }
 }

@@ -70,6 +70,7 @@ namespace Marson.Grocker.UnitTests
                     watcher.LineCount = 4;
                     watcher.Start();
                     writer.Flush();
+                    Debugger.Break();
                     writtenLines = stringWriter.ToString().ToLines();
                 }
                 writtenLines.ForEach(i => Debug.WriteLine(i));

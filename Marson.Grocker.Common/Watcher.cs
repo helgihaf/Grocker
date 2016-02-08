@@ -16,20 +16,10 @@ namespace Marson.Grocker.Common
         private readonly object eventQueueLock = new object();
 
         private FileSystemWatcher fileSystemWatcher = new FileSystemWatcher();
-        private Timer timer;
-        private Task eventTask;
-
-        private LogFile logFile;
-        private int logLineIndex;
+        private Task readTask;
 
         public void Dispose()
         {
-            if (timer != null)
-            {
-                timer.Dispose();
-                timer = null;
-            }
-
             if (fileSystemWatcher != null)
             {
                 fileSystemWatcher.EnableRaisingEvents = false;
@@ -37,9 +27,9 @@ namespace Marson.Grocker.Common
                 fileSystemWatcher = null;
             }
 
-            if (eventTask != null)
+            if (readTask != null)
             {
-                ShutdownEventTask();
+                ShutdownReadTask();
             }
         }
 
@@ -94,7 +84,6 @@ namespace Marson.Grocker.Common
         public Watcher()
         {
             LineCount = 80;
-            timer = new Timer(new TimerCallback(TimerMain));
             fileSystemWatcher.Changed += FileSystemWatcher_Changed;
             fileSystemWatcher.Created += FileSystemWatcher_Created;
             fileSystemWatcher.Renamed += FileSystemWatcher_Renamed;
@@ -123,26 +112,92 @@ namespace Marson.Grocker.Common
                 throw new InvalidOperationException(nameof(LineWriter) + " property not set");
             }
 
-            FindAndTail();
-            eventTask = Task.Factory.StartNew(() => EventTaskMain(), TaskCreationOptions.LongRunning);
+            readTask = Task.Factory.StartNew(() => ReadTaskMain(), TaskCreationOptions.LongRunning);
             fileSystemWatcher.EnableRaisingEvents = true;
-            timer.Change(FilePollingMs, FilePollingMs);
         }
 
         public void Stop()
         {
-            timer.Change(Timeout.Infinite, Timeout.Infinite);
             fileSystemWatcher.EnableRaisingEvents = false;
-            ShutdownEventTask();
+            ShutdownReadTask();
         }
 
-        private void FindAndTail(string eventText = null)
+        private void ReadTaskMain()
         {
-            var file = FindFilePath();
-            if (file != null)
+            bool keepOnReading = true;
+            StreamReader reader = null;
+
+            while (keepOnReading)
             {
-                TailFile(file, eventText);
+                // If not already reading, find something to read
+                if (reader == null)
+                {
+                    reader = GetStreamReader();
+                }
+
+                // Check for data on our current reader
+                if (reader != null)
+                {
+                    string line;
+                    try
+                    {
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            LineWriter.WriteLine(line);
+                        }
+                    }
+                    catch (IOException ex)
+                    {
+                        LineWriter.WriteLine(string.Format(">>>> {0} <<<<", ex.Message));
+                        reader = null;
+                        continue;
+                    }
+                }
+
+                // Check for file system events
+                WatcherEvent watcherEvent = null;
+                lock (eventQueueLock)
+                {
+                    if (eventQueue.Count == 0)
+                    {
+                        Monitor.Wait(eventQueueLock, FilePollingMs);
+                    }
+                    if (eventQueue.Count > 0)
+                    {
+                        watcherEvent = eventQueue.Dequeue();
+                        keepOnReading = watcherEvent != null;
+                    }
+                }
+                if (watcherEvent != null)
+                {
+                    reader = HandleWatcherEvent(reader, watcherEvent);
+                }
             }
+        }
+
+        private StreamReader GetStreamReader()
+        {
+            StreamReader streamReader = null;
+
+            var filePath = FindFilePath();
+            if (filePath != null)
+            {
+                streamReader = FindTailOf(filePath);
+            }
+            return streamReader;
+        }
+
+        private StreamReader FindTailOf(string filePath)
+        {
+            var logFile = LogFile.LoadFrom(filePath);
+            if (logFile.Lines.Count == 0)
+            {
+                return null;
+            }
+
+            // Output the last LineCount (or less) lines of the file
+            var logLineIndex = Math.Max(0, logFile.Lines.Count - LineCount);
+            return logFile.CreateReader(logLineIndex);
         }
 
         private string FindFilePath()
@@ -154,125 +209,11 @@ namespace Marson.Grocker.Common
             return filePaths.FirstOrDefault();
         }
 
-        private void TailFile(string filePath, string eventText)
-        {
-            if (eventText != null && logFile != null && !IsCurrentLogFile(filePath))
-            {
-                WriteEvent(eventText);
-            }
-
-            if (logFile == null)
-            {
-                WriteNewFilePathEvent(filePath);
-            }
-
-            CopyLinesToWriter(filePath);
-        }
-
         private void WriteNewFilePathEvent(string filePath)
         {
             LineWriter.WriteLine(string.Format("++++++ File: {0} ++++++", filePath));
         }
 
-        private void WriteEvent(string eventText)
-        {
-            LineWriter.WriteLine(string.Format(">>>>>> {0} <<<<<<", eventText));
-        }
-
-        private void CopyLinesToWriter(string filePath)
-        {
-            if (!IsCurrentLogFile(filePath))
-            {
-                Debug.WriteLine("Selecting " + filePath);
-                WriteNewFile(filePath);
-                Debug.WriteLine("  logLineIndex=" + logLineIndex);
-            }
-            else
-            {
-                Debug.WriteLine("Continuing with " + filePath + " at logLineIndex = " + logLineIndex);
-                WriteCurrentFile();
-                Debug.WriteLine("  logLineIndex=" + logLineIndex);
-            }
-        }
-
-        private void WriteNewFile(string filePath)
-        {
-            // New file, load it
-            logFile = LogFile.LoadFrom(filePath);
-            if (logFile.Lines.Count == 0)
-            {
-                return;
-            }
-
-            // Output the last LineCount (or less) lines of the file
-            var linesToCopy = Math.Min(logFile.Lines.Count, LineCount);
-            logLineIndex = Math.Max(0, logFile.Lines.Count - LineCount);
-            logFile.CopyLines(logLineIndex, LineWriter, linesToCopy);
-            logLineIndex = logFile.Lines.Count;
-        }
-
-        private void WriteCurrentFile()
-        {
-            // We are continuing from an existing file. Instead of outputing the last LineCount
-            // lines of the file, we output everything written to the file since we last
-            // output something.
-            Debug.Assert(logLineIndex == logFile.Lines.Count);
-
-            logFile.Update();
-            var linesToCopy = logFile.Lines.Count - logLineIndex;
-            if (linesToCopy > 0)
-            {
-                logFile.CopyLines(logLineIndex, LineWriter, linesToCopy);
-                logLineIndex += linesToCopy;
-            }
-            else if (linesToCopy < 0)
-            {
-                // File has been re-written or changed drastically. Reset the whole thing.
-                logFile = null;
-                EnqueueEvent(new WatcherEvent { EventType = WatcherEventType.Create });
-            }
-        }
-
-
-        private string[] ReadLines(string filePath)
-        {
-            string[] lines;
-
-            if (!IsCurrentLogFile(filePath))
-            {
-                logFile = LogFile.LoadFrom(filePath);
-                if (logFile.Lines.Count == 0)
-                {
-                    return null;
-                }
-
-                var linesToLoad = Math.Min(logFile.Lines.Count, LineCount);
-                lines = new string[linesToLoad];
-                logLineIndex = Math.Max(0, logFile.Lines.Count - LineCount);
-                logFile.LoadLines(logLineIndex, lines);
-            }
-            else
-            {
-                Debug.Assert(logLineIndex == logFile.Lines.Count);
-
-                logFile.Update();
-                var addedLineCount = logFile.Lines.Count - logLineIndex;
-                if (addedLineCount <= 0)
-                {
-                    logLineIndex = logFile.Lines.Count;
-                    return null;
-                }
-                lines = new string[addedLineCount];
-                logFile.LoadLines(logLineIndex, lines);
-            }
-
-            return lines;
-        }
-
-        private bool IsCurrentLogFile(string filePath)
-        {
-            return logFile != null && string.Equals(logFile.FilePath, filePath, StringComparison.CurrentCultureIgnoreCase);
-        }
 
         private void EnqueueEvent(WatcherEvent watcherEvent)
         {
@@ -303,28 +244,7 @@ namespace Marson.Grocker.Common
             EnqueueEvent(new WatcherEvent { EventType = WatcherEventType.Change, EventArgs = e });
         }
 
-        private void EventTaskMain()
-        {
-            while (true)
-            {
-                WatcherEvent watcherEvent;
-                lock (eventQueueLock)
-                {
-                    while (eventQueue.Count == 0)
-                    {
-                        Monitor.Wait(eventQueueLock);
-                    }
-                    watcherEvent = eventQueue.Dequeue();
-                }
-                if (watcherEvent == null)
-                {
-                    break;
-                }
-                HandleWatcherEvent(watcherEvent);
-            }
-        }
-
-        private void ShutdownEventTask()
+        private void ShutdownReadTask()
         {
             lock (eventQueueLock)
             {
@@ -332,15 +252,17 @@ namespace Marson.Grocker.Common
                 eventQueue.Enqueue(null);
                 Monitor.Pulse(eventQueueLock);
             }
-            eventTask.Wait();
-            eventTask.Dispose();
-            eventTask = null;
+            readTask.Wait();
+            readTask.Dispose();
+            readTask = null;
         }
 
 
 
-        private void HandleWatcherEvent(WatcherEvent watcherEvent)
+        private StreamReader HandleWatcherEvent(StreamReader currentStreamReader, WatcherEvent watcherEvent)
         {
+            StreamReader resultStreamReader = currentStreamReader;
+
             var fileSystemEventArgs = watcherEvent.EventArgs as FileSystemEventArgs;
             var renamedEventArgs = watcherEvent.EventArgs as RenamedEventArgs;
 
@@ -348,34 +270,35 @@ namespace Marson.Grocker.Common
             switch (watcherEvent.EventType)
             {
                 case WatcherEventType.Create:
-                    FindAndTail("New file created");
+                    // Do nothing. A new empty file does not interest us. We'll read it once we get a Change event.
                     break;
                 case WatcherEventType.Change:
-                    FindAndTail("Change in another file");
+                    if (!ArePathsEqual(fileSystemEventArgs.FullPath, FullPathOf(currentStreamReader)))
+                    {
+                        // A change in some other file. Chase that one.
+                        resultStreamReader = null;
+                    }
                     break;
                 case WatcherEventType.Rename:
-                    if (IsCurrentLogFile(renamedEventArgs.OldFullPath) || IsCurrentLogFile(renamedEventArgs.FullPath))
-                    {
-                        // A file just got renamed, we can no longer assume that an existing file name is the same file we were watching.
-                        // We don't want to select a new file right away because we might discover a "new" file that is the current file
-                        // renamed. We will rely on other file events to notify us of changes, be it the renamed file or a new file.
-                        logFile = null;
-                        WriteEvent("File renamed");
-                    }
+                    // Do nothing. If our current file was renamed (moved), we'll get an exception on next read.
                     break;
                 case WatcherEventType.Delete:
-                    if (IsCurrentLogFile(fileSystemEventArgs.FullPath))
-                    {
-                        FindAndTail("File deleted");
-                    }
+                    // Do nothing. If our current file was deleted, we'll get an exception on next read.
                     break;
             }
+
+            return resultStreamReader;
         }
 
-        private void TimerMain(object state)
+        private bool ArePathsEqual(string path1, string path2)
         {
-            EnqueueEvent(new WatcherEvent { EventType = WatcherEventType.Change });
+            return string.Equals(path1, path2, StringComparison.CurrentCultureIgnoreCase);
         }
 
+        private string FullPathOf(StreamReader streamReader)
+        {
+            var fileStream = streamReader.BaseStream as FileStream;
+            return fileStream?.Name;
+        }
     }
 }
