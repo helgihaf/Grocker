@@ -116,7 +116,7 @@ namespace Grocker
             {
                 return null;
             }
-            using (var stream = new FileStream(filePath, FileMode.Open))
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
                 return serializer.Deserialize(stream).ToList();
             }
