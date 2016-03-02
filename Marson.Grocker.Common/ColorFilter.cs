@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace Marson.Grocker.Common
 {
-    public class ColorFilter
+    public class ColorFilter<T>
     {
         private Regex regex;
 
@@ -16,12 +16,12 @@ namespace Marson.Grocker.Common
         /// <summary>
         /// The foreground color to apply
         /// </summary>
-        public ConsoleColor ForegroundColor { get; set; }
+        public T ForegroundColor { get; set; }
 
         /// <summary>
         /// The background color to apply
         /// </summary>
-        public ConsoleColor BackgroundColor { get; set; }
+        public T BackgroundColor { get; set; }
 
         /// <summary>
         /// Checks if the specified line matches the Pattern.

@@ -8,17 +8,17 @@ using System.Xml.Serialization;
 
 namespace Marson.Grocker.Common
 {
-    public class XmlColorSchemaSerializer : IColorSchemaSerializer
+    public class XmlColorSchemaSerializer<T> : IColorSchemaSerializer<T>
     {
-        public IEnumerable<ColorSchema> Deserialize(Stream stream)
+        public IEnumerable<ColorSchema<T>> Deserialize(Stream stream)
         {
-            XmlSerializer ser = new XmlSerializer(typeof(List<ColorSchema>));
-            return (List<ColorSchema>)ser.Deserialize(stream);
+            XmlSerializer ser = new XmlSerializer(typeof(List<ColorSchema<T>>));
+            return (List<ColorSchema<T>>)ser.Deserialize(stream);
         }
 
-        public void Serialize(IEnumerable<ColorSchema> colorSchemas, Stream stream)
+        public void Serialize(IEnumerable<ColorSchema<T>> colorSchemas, Stream stream)
         {
-            XmlSerializer ser = new XmlSerializer(typeof(List<ColorSchema>));
+            XmlSerializer ser = new XmlSerializer(typeof(List<ColorSchema<T>>));
             ser.Serialize(stream, colorSchemas.ToList());
         }
     }

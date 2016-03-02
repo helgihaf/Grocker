@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grocker", "Grocker\Grocker.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marson.Grocker.Analyze", "Marson.Grocker.Analyze\Marson.Grocker.Analyze.csproj", "{F8B19481-D29B-4764-9666-853F8CC62D06}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marson.Grocker.WinForms", "Marson.Grocker.WinForms\Marson.Grocker.WinForms.csproj", "{B37EBA7E-409B-4649-864E-351857CA2063}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{F8B19481-D29B-4764-9666-853F8CC62D06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8B19481-D29B-4764-9666-853F8CC62D06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8B19481-D29B-4764-9666-853F8CC62D06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B37EBA7E-409B-4649-864E-351857CA2063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B37EBA7E-409B-4649-864E-351857CA2063}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B37EBA7E-409B-4649-864E-351857CA2063}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B37EBA7E-409B-4649-864E-351857CA2063}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

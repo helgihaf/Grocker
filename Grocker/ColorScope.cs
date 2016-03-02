@@ -5,18 +5,18 @@ namespace Grocker
 {
     internal class ColorScope : IDisposable
     {
-        private ColorFilter savedFilter;
+        private ColorFilter<ConsoleColor> savedFilter;
 
-        public ColorScope(ColorFilter colorFilter)
+        public ColorScope(ColorFilter<ConsoleColor> colorFilter)
         {
             if (colorFilter != null)
             {
-                savedFilter = new ColorFilter { ForegroundColor = Console.ForegroundColor, BackgroundColor = Console.BackgroundColor };
+                savedFilter = new ColorFilter<ConsoleColor> { ForegroundColor = Console.ForegroundColor, BackgroundColor = Console.BackgroundColor };
                 ApplyFilter(colorFilter);
             }
         }
 
-        private static void ApplyFilter(ColorFilter colorFilter)
+        private static void ApplyFilter(ColorFilter<ConsoleColor> colorFilter)
         {
             Console.ForegroundColor = colorFilter.ForegroundColor;
             Console.BackgroundColor = colorFilter.BackgroundColor;

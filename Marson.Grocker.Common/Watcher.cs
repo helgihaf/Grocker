@@ -138,6 +138,8 @@ namespace Marson.Grocker.Common
                 // Check for data on our current reader
                 if (reader != null)
                 {
+                    //var fileStream = reader.BaseStream as FileStream;
+                    //fileStream.
                     string line;
                     try
                     {
@@ -183,6 +185,10 @@ namespace Marson.Grocker.Common
             if (filePath != null)
             {
                 streamReader = FindTailOf(filePath);
+                if (streamReader != null)
+                {
+                    LineWriter.WriteLine(string.Format("++++++ File: {0} ++++++", filePath));
+                }
             }
             return streamReader;
         }
@@ -280,10 +286,19 @@ namespace Marson.Grocker.Common
                     }
                     break;
                 case WatcherEventType.Rename:
-                    // Do nothing. If our current file was renamed (moved), we'll get an exception on next read.
+                    var currentFullPath = FullPathOf(currentStreamReader);
+                    if (ArePathsEqual(renamedEventArgs.FullPath, currentFullPath) || ArePathsEqual(renamedEventArgs.OldFullPath, currentFullPath))
+                    {
+                        // File names are changing and our stream reader happily ignores further data.
+                        resultStreamReader = null;
+                    }
                     break;
                 case WatcherEventType.Delete:
-                    // Do nothing. If our current file was deleted, we'll get an exception on next read.
+                    if (ArePathsEqual(fileSystemEventArgs.FullPath, FullPathOf(currentStreamReader)))
+                    {
+                        // We are being deleted.
+                        resultStreamReader = null;
+                    }
                     break;
             }
 

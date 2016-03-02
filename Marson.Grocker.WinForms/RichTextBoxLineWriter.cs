@@ -1,21 +1,27 @@
 ﻿using Marson.Grocker.Common;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
-namespace Grocker
+namespace Marson.Grocker.WinForms
 {
-    public class ConsoleLineWriter : ILineWriter
+    internal class RichTextBoxLineWriter : ILineWriter
     {
-        private readonly TextWriter implTextWriter = Console.Out;
-        private readonly List<ColorSchema<ConsoleColor>> colorSchemas = new List<ColorSchema<ConsoleColor>>();
+        private readonly RichTextBox box;
+        private readonly List<ColorSchema<Color>> colorSchemas = new List<ColorSchema<Color>>();
 
         private bool autoDetectColorSchema = true;
         private bool autoDetectionPending = true;
-        private ColorSchema<ConsoleColor> colorSchema;
+        private ColorSchema<Color> colorSchema;
+
+        public RichTextBoxLineWriter(RichTextBox box)
+        {
+            this.box = box;
+        }
 
         public bool AutoDetectColorSchema
         {
@@ -30,7 +36,7 @@ namespace Grocker
             }
         }
 
-        public List<ColorSchema<ConsoleColor>> ColorSchemas
+        public List<ColorSchema<Color>> ColorSchemas
         {
             get { return colorSchemas; }
             set
@@ -40,7 +46,7 @@ namespace Grocker
             }
         }
 
-        public ColorSchema<ConsoleColor> ColorSchema
+        public ColorSchema<Color> ColorSchema
         {
             get { return colorSchema; }
             set { colorSchema = value; }
@@ -48,17 +54,41 @@ namespace Grocker
 
         public void WriteLine(string line)
         {
+            if (box.InvokeRequired)
+            {
+                box.Invoke((MethodInvoker)delegate { DoWriteLine(line); });
+            }
+            else
+            {
+                DoWriteLine(line);
+            }
+        }
+
+        private void DoWriteLine(string line)
+        {
             if (autoDetectionPending)
             {
                 TryDetectSchema(new[] { line });
             }
             using (var colorScope = CreateColorScope(line))
             {
-                implTextWriter.WriteLine(line);
+                box.AppendText(line + Environment.NewLine);
             }
         }
 
         public void WriteLines(string[] lines)
+        {
+            if (box.InvokeRequired)
+            {
+                box.Invoke((MethodInvoker)delegate { DoWriteLines(lines); });
+            }
+            else
+            {
+                DoWriteLines(lines);
+            }
+        }
+
+        private void DoWriteLines(string[] lines)
         {
             if (autoDetectionPending)
             {
@@ -68,7 +98,7 @@ namespace Grocker
             {
                 using (var colorScope = CreateColorScope(line))
                 {
-                    implTextWriter.WriteLine(line);
+                    box.AppendText(line + Environment.NewLine);
                 }
             }
         }
@@ -113,14 +143,12 @@ namespace Grocker
 
         public void Flush()
         {
-            implTextWriter.Flush();
         }
 
 
         private ColorScope CreateColorScope(string line)
         {
-            return new ColorScope(ColorSchema?.GetMatchingFilter(line));
+            return new ColorScope(box, ColorSchema?.GetMatchingFilter(line));
         }
-
     }
 }

@@ -1,71 +1,71 @@
 <?xml version="1.0"?>
-<ArrayOfColorSchemaOfConsoleColor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <ColorSchemaOfConsoleColor>
+<ArrayOfColorSchemaOfColor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ColorSchemaOfColor>
     <Name>SOA</Name>
     <SelectorPattern>^\[\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}.\d{3}\]</SelectorPattern>
     <Filters>
-      <ColorFilterOfConsoleColor>
+      <ColorFilterOfColor>
         <Pattern>\[Warning\]</Pattern>
         <ForegroundColor>DarkYellow</ForegroundColor>
         <BackgroundColor>Black</BackgroundColor>
-      </ColorFilterOfConsoleColor>
-      <ColorFilterOfConsoleColor>
+      </ColorFilterOfColor>
+      <ColorFilterOfColor>
         <Pattern>\[Error\]</Pattern>
-        <ForegroundColor>White</ForegroundColor>
-        <BackgroundColor>Red</BackgroundColor>
-      </ColorFilterOfConsoleColor>
-      <ColorFilterOfConsoleColor>
+        <ForegroundColor>#FFFFFF</ForegroundColor>
+        <BackgroundColor>#FF0000</BackgroundColor>
+      </ColorFilterOfColor>
+      <ColorFilterOfColor>
         <Pattern>\[Debug\]</Pattern>
         <ForegroundColor>Gray</ForegroundColor>
         <BackgroundColor>Black</BackgroundColor>
-      </ColorFilterOfConsoleColor>
-      <ColorFilterOfConsoleColor>
+      </ColorFilterOfColor>
+      <ColorFilterOfColor>
         <Pattern>\[Info\]</Pattern>
         <ForegroundColor>Cyan</ForegroundColor>
         <BackgroundColor>Black</BackgroundColor>
-      </ColorFilterOfConsoleColor>
+      </ColorFilterOfColor>
     </Filters>
-  </ColorSchemaOfConsoleColor>
-  <ColorSchemaOfConsoleColor>
+  </ColorSchemaOfColor>
+  <ColorSchemaOfColor>
     <Name>Core</Name>
     <SelectorPattern>^\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}.\d{3}\|TRID</SelectorPattern>
     <Filters>
-      <ColorFilterOfConsoleColor>
+      <ColorFilterOfColor>
         <Pattern>\|WARNING\&gt;</Pattern>
         <ForegroundColor>DarkYellow</ForegroundColor>
         <BackgroundColor>Black</BackgroundColor>
-      </ColorFilterOfConsoleColor>
-      <ColorFilterOfConsoleColor>
+      </ColorFilterOfColor>
+      <ColorFilterOfColor>
         <Pattern>\|ERROR\&gt;</Pattern>
         <ForegroundColor>White</ForegroundColor>
         <BackgroundColor>Red</BackgroundColor>
-      </ColorFilterOfConsoleColor>
-      <ColorFilterOfConsoleColor>
+      </ColorFilterOfColor>
+      <ColorFilterOfColor>
         <Pattern>\|DEBUG\&gt;</Pattern>
         <ForegroundColor>Black</ForegroundColor>
         <BackgroundColor>Gray</BackgroundColor>
-      </ColorFilterOfConsoleColor>
-      <ColorFilterOfConsoleColor>
+      </ColorFilterOfColor>
+      <ColorFilterOfColor>
         <Pattern>\|INFO\&gt;</Pattern>
         <ForegroundColor>Cyan</ForegroundColor>
         <BackgroundColor>Black</BackgroundColor>
-      </ColorFilterOfConsoleColor>
+      </ColorFilterOfColor>
     </Filters>
-  </ColorSchemaOfConsoleColor>
-  <ColorSchemaOfConsoleColor>
+  </ColorSchemaOfColor>
+  <ColorSchemaOfColor>
     <Name>IIS</Name>
     <SelectorPattern>^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\s)|(#\w+:)</SelectorPattern>
     <Filters>
-      <ColorFilterOfConsoleColor>
+      <ColorFilterOfColor>
         <Pattern>POST .*- [4-5]\d\d </Pattern>
         <ForegroundColor>White</ForegroundColor>
         <BackgroundColor>Red</BackgroundColor>
-      </ColorFilterOfConsoleColor>
-      <ColorFilterOfConsoleColor>
+      </ColorFilterOfColor>
+      <ColorFilterOfColor>
         <Pattern>POST .*- 3\d\d </Pattern>
         <ForegroundColor>DarkYellow</ForegroundColor>
         <BackgroundColor>Black</BackgroundColor>
-      </ColorFilterOfConsoleColor>
+      </ColorFilterOfColor>
     </Filters>
-  </ColorSchemaOfConsoleColor>
-</ArrayOfColorSchemaOfConsoleColor>
+  </ColorSchemaOfColor>
+</ArrayOfColorSchemaOfColor>

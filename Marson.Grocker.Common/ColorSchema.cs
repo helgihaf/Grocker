@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Marson.Grocker.Common
 {
-    public class ColorSchema
+    public class ColorSchema<T>
     {
         private Regex regex;
 
@@ -24,7 +24,7 @@ namespace Marson.Grocker.Common
         /// <summary>
         /// The color filters that belong to this schema.
         /// </summary>
-        public List<ColorFilter> Filters { get; set; } = new List<ColorFilter>();
+        public List<ColorFilter<T>> Filters { get; set; } = new List<ColorFilter<T>>();
 
         /// <summary>
         /// Checks if the specified line matches the SelectorPattern.
@@ -45,9 +45,9 @@ namespace Marson.Grocker.Common
         /// </summary>
         /// <param name="line">A log line</param>
         /// <returns>A filter that matches the specified line or null if no match is found.</returns>
-        public ColorFilter GetMatchingFilter(string line)
+        public ColorFilter<T> GetMatchingFilter(string line)
         {
-            ColorFilter result = null;
+            ColorFilter<T> result = null;
             foreach (var colorFilter in Filters)
             {
                 if (colorFilter.IsMatch(line))

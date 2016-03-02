@@ -108,9 +108,9 @@ namespace Grocker
             }
         }
 
-        private static List<ColorSchema> LoadColorSchemas()
+        private static List<ColorSchema<ConsoleColor>> LoadColorSchemas()
         {
-            IColorSchemaSerializer serializer = GetSerializer();
+            IColorSchemaSerializer<ConsoleColor> serializer = GetSerializer();
             string filePath = LocateSchemaFile();
             if (filePath == null)
             {
@@ -158,9 +158,9 @@ namespace Grocker
             return Path.GetDirectoryName(codeBaseUri.LocalPath);
         }
 
-        private static IColorSchemaSerializer GetSerializer()
+        private static IColorSchemaSerializer<ConsoleColor> GetSerializer()
         {
-            return new XmlColorSchemaSerializer();
+            return new XmlColorSchemaSerializer<ConsoleColor>();
         }
 
         private static void WaitForStopSignal()
@@ -172,5 +172,17 @@ namespace Grocker
                 doRun = keyInfo.KeyChar != 'q';
             }
         }
+
+        // Handy serializing thingy
+        //var sc1 = new ColorSchema<ConsoleColor>();
+        //sc1.Filters.Add(new ColorFilter<ConsoleColor> { BackgroundColor = ConsoleColor.Black, ForegroundColor = ConsoleColor.DarkBlue });
+        //var sc = new ColorSchema<ConsoleColor>[] { sc1 };
+        //IColorSchemaSerializer<ConsoleColor> serializer = GetSerializer();
+        //using (var stream = new FileStream(@"c:\temp\color.xml", FileMode.Create))
+        //{
+        //    serializer.Serialize(sc, stream);
+        //}
+        //return;
+
     }
 }

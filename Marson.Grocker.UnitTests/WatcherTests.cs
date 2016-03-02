@@ -70,7 +70,7 @@ namespace Marson.Grocker.UnitTests
                     watcher.LineCount = 4;
                     watcher.Start();
                     writer.Flush();
-                    Debugger.Break();
+                    Thread.Sleep(200);
                     writtenLines = stringWriter.ToString().ToLines();
                 }
                 writtenLines.ForEach(i => Debug.WriteLine(i));
@@ -115,7 +115,7 @@ namespace Marson.Grocker.UnitTests
                         watcher.Filter = "*.log";
                         watcher.LineCount = 4;
                         watcher.Start();
-
+                        Thread.Sleep(200);
                         logger.WriteLines(newLines);
                     }
 
@@ -168,6 +168,7 @@ namespace Marson.Grocker.UnitTests
                     watcher.LineCount = 4;
                     watcher.Start();
 
+                    Thread.Sleep(200);
                     File.Move(logTempFilePath, oldLogTempFilePath);
                     EmulateLog(logFile5, logTempFilePath);
 
@@ -183,7 +184,7 @@ namespace Marson.Grocker.UnitTests
                     TestData.LoadLines(logFile9,
                            FirstLogFileLineCount - watcher.LineCount,
                            watcher.LineCount));
-                firstLines.Add(">>>>>> <<<<<<");
+                //firstLines.Add(">>>>>> <<<<<<");
                 var secondLines = CreateLineListWithFileMarker(
                     TestData.LoadLines(logFile5,
                            SecondLogFileLineCount - watcher.LineCount,
@@ -210,6 +211,7 @@ namespace Marson.Grocker.UnitTests
                 watcher.LineCount = 4;
                 watcher.Start();
 
+                Thread.Sleep(200);
                 File.Delete(logTempFilePath);
 
                 Thread.Sleep(1000);
