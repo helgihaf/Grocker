@@ -11,12 +11,15 @@ namespace Marson.Grocker.WinForms
 {
     internal class RichTextBoxLineWriter : ILineWriter
     {
+        private const int LineCountMax = 512;
+        private const int LineCountToClean = 128;
+
         private readonly RichTextBox box;
-        private readonly List<ColorSchema<Color>> colorSchemas = new List<ColorSchema<Color>>();
+        private readonly List<ColorSchema> colorSchemas = new List<ColorSchema>();
 
         private bool autoDetectColorSchema = true;
         private bool autoDetectionPending = true;
-        private ColorSchema<Color> colorSchema;
+        private ColorSchema colorSchema;
 
         public RichTextBoxLineWriter(RichTextBox box)
         {
@@ -36,7 +39,7 @@ namespace Marson.Grocker.WinForms
             }
         }
 
-        public List<ColorSchema<Color>> ColorSchemas
+        public List<ColorSchema> ColorSchemas
         {
             get { return colorSchemas; }
             set
@@ -46,7 +49,7 @@ namespace Marson.Grocker.WinForms
             }
         }
 
-        public ColorSchema<Color> ColorSchema
+        public ColorSchema ColorSchema
         {
             get { return colorSchema; }
             set { colorSchema = value; }
@@ -70,9 +73,23 @@ namespace Marson.Grocker.WinForms
             {
                 TryDetectSchema(new[] { line });
             }
+            CheckAndClean();
             using (var colorScope = CreateColorScope(line))
             {
                 box.AppendText(line + Environment.NewLine);
+                box.SelectionStart = box.Text.Length;
+                box.ScrollToCaret();
+            }
+        }
+
+        private void CheckAndClean()
+        {
+            string[] lines = box.Lines;
+            if (lines.Length > LineCountMax)
+            {
+                string[] newLines = new string[lines.Length - LineCountToClean];
+                lines.CopyTo(newLines, LineCountToClean);
+                box.Lines = newLines;
             }
         }
 

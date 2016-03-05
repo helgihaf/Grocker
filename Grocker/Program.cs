@@ -108,9 +108,9 @@ namespace Grocker
             }
         }
 
-        private static List<ColorSchema<ConsoleColor>> LoadColorSchemas()
+        private static List<ColorSchema> LoadColorSchemas()
         {
-            IColorSchemaSerializer<ConsoleColor> serializer = GetSerializer();
+            IColorSchemaSerializer serializer = GetSerializer();
             string filePath = LocateSchemaFile();
             if (filePath == null)
             {
@@ -158,9 +158,9 @@ namespace Grocker
             return Path.GetDirectoryName(codeBaseUri.LocalPath);
         }
 
-        private static IColorSchemaSerializer<ConsoleColor> GetSerializer()
+        private static IColorSchemaSerializer GetSerializer()
         {
-            return new XmlColorSchemaSerializer<ConsoleColor>();
+            return new XmlColorSchemaSerializer();
         }
 
         private static void WaitForStopSignal()

@@ -15,7 +15,7 @@ namespace Marson.Grocker.WinForms
     public partial class MainForm : Form
     {
         private FolderDialog folderDialog = new FolderDialog();
-        private List<ColorSchema<Color>> colorSchemas;
+        private List<ColorSchema> colorSchemas;
 
         public MainForm()
         {
@@ -23,9 +23,34 @@ namespace Marson.Grocker.WinForms
             colorSchemas = LoadColorSchemas();
         }
 
-        private static List<ColorSchema<Color>> LoadColorSchemas()
+        private void MainForm_Load(object sender, EventArgs e)
         {
-            IColorSchemaSerializer<Color> serializer = GetSerializer();
+            if (Settings.FolderList == null)
+            {
+                Settings.FolderList = new System.Collections.Specialized.StringCollection();
+            }
+            folderDialog.FolderList = Settings.FolderList;
+            PopulateRecentFolderMenu();
+        }
+
+        private void PopulateRecentFolderMenu()
+        {
+            for (int i = 0; i < Settings.FolderList.Count && i < 10; i++)
+            {
+                string folder = Settings.FolderList[i];
+                var menuItem = new ToolStripMenuItem
+                {
+                    Text = string.Format("&{0} {1}", i + 1, folder),
+                    Tag = folder,
+                };
+                menuItem.Click += RecentFolderMenuItemClick;
+                openrecentToolStripMenuItem.DropDownItems.Add(menuItem);
+            }
+        }
+
+        private static List<ColorSchema> LoadColorSchemas()
+        {
+            IColorSchemaSerializer serializer = GetSerializer();
             string filePath = LocateSchemaFile();
             if (filePath == null)
             {
@@ -37,7 +62,15 @@ namespace Marson.Grocker.WinForms
             }
         }
 
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        private Properties.Settings Settings
+        {
+            get
+            {
+                return Properties.Settings.Default;
+            }
+        }
+
+        private void OpenMenuItemClick(object sender, EventArgs e)
         {
             if (folderDialog.ShowDialog(this) == DialogResult.OK)
             {
@@ -45,7 +78,17 @@ namespace Marson.Grocker.WinForms
             }
         }
 
-        private void AddMonitor(string directoryPath)
+        private void RecentFolderMenuItemClick(object sender, EventArgs e)
+        {
+            var menuItem = sender as ToolStripMenuItem;
+            if (menuItem != null && !string.IsNullOrEmpty(menuItem.Tag as string))
+            {
+                AddMonitor(menuItem.Tag as string);
+            }
+        }
+
+
+        private async void AddMonitor(string directoryPath)
         {
             TabPage page = new TabPage(directoryPath);
             WatcherView view = new WatcherView();
@@ -55,6 +98,28 @@ namespace Marson.Grocker.WinForms
             view.DirectoryPath = directoryPath;
             view.ColorSchemas = colorSchemas;
             tabControl.TabPages.Add(page);
+            tabControl.SelectedTab = page;
+            try
+            {
+                await view.Start();
+            }
+            catch (Exception ex)
+            {
+                tabControl.TabPages.Remove(page);
+                if (ex is ArgumentException || ex is IOException)
+                {
+                    ShowError("Error opening directory \"{0}\": {1}", directoryPath, ex.Message);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        private void ShowError(string format, params string[] args)
+        {
+            MessageBox.Show(this, string.Format(format, args), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private static string LocateSchemaFile()
@@ -93,10 +158,27 @@ namespace Marson.Grocker.WinForms
             return Path.GetDirectoryName(codeBaseUri.LocalPath);
         }
 
-        private static IColorSchemaSerializer<Color> GetSerializer()
+        private static IColorSchemaSerializer GetSerializer()
         {
-            return new XmlColorSchemaSerializer<Color>();
+            return new XmlColorSchemaSerializer();
         }
 
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Properties.Settings.Default.Save();
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Handy serializing thingy
+            var sc1 = new ColorSchema();
+            sc1.Filters.Add(new ColorFilter { BackgroundColor = nameof(Color.White), ForegroundColor = nameof(Color.LightCyan) });
+            var sc = new ColorSchema[] { sc1 };
+            IColorSchemaSerializer serializer = GetSerializer();
+            using (var stream = new FileStream(@"c:\temp\color.xml", FileMode.Create))
+            {
+                serializer.Serialize(sc, stream);
+            }
+        }
     }
 }

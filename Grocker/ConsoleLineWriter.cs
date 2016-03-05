@@ -11,11 +11,11 @@ namespace Grocker
     public class ConsoleLineWriter : ILineWriter
     {
         private readonly TextWriter implTextWriter = Console.Out;
-        private readonly List<ColorSchema<ConsoleColor>> colorSchemas = new List<ColorSchema<ConsoleColor>>();
+        private readonly List<ColorSchema> colorSchemas = new List<ColorSchema>();
 
         private bool autoDetectColorSchema = true;
         private bool autoDetectionPending = true;
-        private ColorSchema<ConsoleColor> colorSchema;
+        private ColorSchema colorSchema;
 
         public bool AutoDetectColorSchema
         {
@@ -30,7 +30,7 @@ namespace Grocker
             }
         }
 
-        public List<ColorSchema<ConsoleColor>> ColorSchemas
+        public List<ColorSchema> ColorSchemas
         {
             get { return colorSchemas; }
             set
@@ -40,7 +40,7 @@ namespace Grocker
             }
         }
 
-        public ColorSchema<ConsoleColor> ColorSchema
+        public ColorSchema ColorSchema
         {
             get { return colorSchema; }
             set { colorSchema = value; }

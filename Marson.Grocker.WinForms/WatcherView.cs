@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Marson.Grocker.Common;
+using System.Diagnostics;
 
 namespace Marson.Grocker.WinForms
 {
@@ -20,9 +21,90 @@ namespace Marson.Grocker.WinForms
             InitializeComponent();
         }
 
-        public string DirectoryPath { get; set; }
+        public string DirectoryPath
+        {
+            get
+            {
+                return textBoxPath.Text;
+            }
+            set
+            {
+                textBoxPath.Text = value;
+            }
+        }
 
-        public List<ColorSchema<Color>> ColorSchemas { get; set; }
+        public List<ColorSchema> ColorSchemas { get; set; }
+
+        public bool IsStarted
+        {
+            get
+            {
+                return watcher != null;
+            }
+        }
+
+        public async Task Start()
+        {
+            if (watcher != null)
+            {
+                throw new InvalidOperationException("Watcher already started");
+            }
+
+            UpdateActions();
+            watcher = await StartNewWatcherAsync();
+            UpdateActions();
+        }
+
+        public void Stop()
+        {
+            if (watcher == null)
+            {
+                throw new InvalidOperationException("Watcher is not started");
+            }
+            if (watcher.IsStarted)
+            {
+                watcher.Stop();
+            }
+            watcher.Dispose();
+            watcher = null;
+        }
+
+        private Task<Watcher> StartNewWatcherAsync()
+        {
+            return Task.Factory.StartNew<Watcher>(() => StartNewWatcher());
+        }
+
+        private Watcher StartNewWatcher()
+        {
+            var newWatcher = new Watcher();
+            try
+            {
+                newWatcher.DirectoryPath = DirectoryPath;
+                newWatcher.Filter = "*.log";
+                newWatcher.LineWriter = CreateWriter();
+                newWatcher.Start();
+            }
+            catch
+            {
+                try
+                {
+                    newWatcher.Dispose();
+                }
+                catch
+                {
+                }
+                throw;
+            }
+            return newWatcher;
+        }
+
+        private void UpdateActions()
+        {
+            buttonPause.Visible = watcher == null || (watcher != null && watcher.IsStarted);
+            buttonPause.Enabled = watcher != null;
+
+            buttonPlay.Visible = watcher != null && !watcher.IsStarted;
+        }
 
         private ILineWriter CreateWriter()
         {
@@ -31,27 +113,18 @@ namespace Marson.Grocker.WinForms
             return writer;
         }
 
-        public void Start()
+        private void buttonPause_Click(object sender, EventArgs e)
         {
-            if (watcher != null)
-            {
-                if (watcher.IsStarted)
-                {
-                    watcher.Stop();
-                }
-                watcher.Dispose();
-            }
-            watcher = new Watcher();
-            watcher.DirectoryPath = DirectoryPath;
-            watcher.Filter = "*.log";
-            watcher.LineWriter = CreateWriter();
-            watcher.Start();
+            watcher.Stop();
+            UpdateActions();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonPlay_Click(object sender, EventArgs e)
         {
-            Start();
+            watcher.Start();
+            UpdateActions();
         }
+
     }
 }
 

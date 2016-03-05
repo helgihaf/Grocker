@@ -5,21 +5,21 @@ namespace Grocker
 {
     internal class ColorScope : IDisposable
     {
-        private ColorFilter<ConsoleColor> savedFilter;
+        private ColorFilter savedFilter;
 
-        public ColorScope(ColorFilter<ConsoleColor> colorFilter)
+        public ColorScope(ColorFilter colorFilter)
         {
             if (colorFilter != null)
             {
-                savedFilter = new ColorFilter<ConsoleColor> { ForegroundColor = Console.ForegroundColor, BackgroundColor = Console.BackgroundColor };
+                savedFilter = new ColorFilter { ForegroundColor = ColorMap.ToString(Console.ForegroundColor), BackgroundColor = ColorMap.ToString(Console.BackgroundColor) };
                 ApplyFilter(colorFilter);
             }
         }
 
-        private static void ApplyFilter(ColorFilter<ConsoleColor> colorFilter)
+        private static void ApplyFilter(ColorFilter colorFilter)
         {
-            Console.ForegroundColor = colorFilter.ForegroundColor;
-            Console.BackgroundColor = colorFilter.BackgroundColor;
+            Console.ForegroundColor = ColorMap.ToConsoleColor(colorFilter.ForegroundColor);
+            Console.BackgroundColor = ColorMap.ToConsoleColor(colorFilter.BackgroundColor);
         }
 
         public void Dispose()

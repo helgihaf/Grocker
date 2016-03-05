@@ -12,9 +12,9 @@ namespace Marson.Grocker.WinForms
     internal class ColorScope : IDisposable
     {
         private readonly RichTextBox box;
-        private ColorFilter<Color> colorFilter;
+        private ColorFilter colorFilter;
 
-        public ColorScope(RichTextBox richTextBox, ColorFilter<Color> colorFilter)
+        public ColorScope(RichTextBox richTextBox, ColorFilter colorFilter)
         {
             this.box = richTextBox;
             this.colorFilter = colorFilter;
@@ -22,8 +22,8 @@ namespace Marson.Grocker.WinForms
             box.SelectionLength = 0;
             if (colorFilter != null)
             {
-                box.SelectionColor = colorFilter.ForegroundColor;
-                box.SelectionBackColor = colorFilter.BackgroundColor;
+                box.SelectionColor = ColorMap.ToDrawingColor(colorFilter.ForegroundColor);
+                box.SelectionBackColor = ColorMap.ToDrawingColor(colorFilter.BackgroundColor);
             }
         }
 

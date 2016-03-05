@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -17,6 +18,8 @@ namespace Marson.Grocker.WinForms
             InitializeComponent();
         }
 
+        public StringCollection FolderList { get; set; }
+
         public string Folder
         {
             get
@@ -31,6 +34,11 @@ namespace Marson.Grocker.WinForms
 
         private void FolderDialog_Load(object sender, EventArgs e)
         {
+            comboBoxFolder.Items.Clear();
+            foreach (var folder in FolderList)
+            {
+                comboBoxFolder.Items.Add(folder);
+            }
             UpdateActions();
         }
 
@@ -68,6 +76,7 @@ namespace Marson.Grocker.WinForms
             if (!found)
             {
                 comboBox.Items.Insert(0, comboBox.Text);
+                FolderList.Insert(0, comboBox.Text);
             }
         }
 

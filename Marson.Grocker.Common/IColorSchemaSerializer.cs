@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Marson.Grocker.Common
 {
-    public interface IColorSchemaSerializer<T>
+    public interface IColorSchemaSerializer
     {
-        void Serialize(IEnumerable<ColorSchema<T>> colorSchemas, Stream stream);
-        IEnumerable<ColorSchema<T>> Deserialize(Stream stream);
+        void Serialize(IEnumerable<ColorSchema> colorSchemas, Stream stream);
+        IEnumerable<ColorSchema> Deserialize(Stream stream);
     }
 }

@@ -46,8 +46,6 @@
     <Compile Include="ColorFilter.cs" />
     <Compile Include="ColorMap.cs" />
     <Compile Include="ColorSchema.cs" />
-    <Compile Include="ConsoleColorSchema.cs" />
-    <Compile Include="DrawingColorSchema.cs" />
     <Compile Include="IColorSchemaSerializer.cs" />
     <Compile Include="ILineWriter.cs" />
     <Compile Include="Line.cs" />

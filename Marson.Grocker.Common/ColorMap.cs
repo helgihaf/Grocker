@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Marson.Grocker.Common
 {
-    internal static class ColorMap
+    public static class ColorMap
     {
         private static Dictionary<ConsoleColor, Color> map = new Dictionary<ConsoleColor, Color>()
         {
@@ -34,5 +34,65 @@ namespace Marson.Grocker.Common
         {
             return map[consoleColor];
         }
+
+        public static ConsoleColor ToConsoleColor(string color)
+        {
+            ConsoleColor result;
+            if (!Enum.TryParse<ConsoleColor>(color, out result))
+            {
+                throw new ArgumentException("Invalid color name", nameof(color));
+            }
+            return result;
+        }
+
+        public static string ToString(ConsoleColor color)
+        {
+            return color.ToString();
+        }
+
+        public static Color ToDrawingColor(string color)
+        {
+            if (string.IsNullOrEmpty(color))
+            {
+                throw new ArgumentException("Invalid color name", nameof(color));
+            }
+
+            if (color.StartsWith("#"))
+            {
+                return HexToColor(color.Substring(1));
+            }
+            else if (color.StartsWith("0x"))
+            {
+                return HexToColor(color.Substring(2));
+            }
+            else
+            {
+                Color? drawingColor = FindDrawingColor(color);
+                if (drawingColor == null)
+                {
+                    drawingColor = GetDrawingColor(ToConsoleColor(color));
+                }
+                return drawingColor.Value;
+            }
+        }
+
+        private static Color HexToColor(string hex)
+        {
+            return Color.FromArgb(int.Parse(hex, System.Globalization.NumberStyles.HexNumber));
+        }
+
+
+        private static Color? FindDrawingColor(string color)
+        {
+            try
+            {
+                return Color.FromName(color);
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
+        }
+
     }
 }

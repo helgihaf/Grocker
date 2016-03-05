@@ -11,6 +11,7 @@ namespace Marson.Grocker.Common
 {
     public class Watcher : IDisposable
     {
+        public const int DefaultLineCount = 100;
         private const int FilePollingMs = 2500;
         private readonly Queue<WatcherEvent> eventQueue = new Queue<WatcherEvent>();
         private readonly object eventQueueLock = new object();
@@ -77,13 +78,13 @@ namespace Marson.Grocker.Common
         //public bool AlwaysShowLates { get; set; }
 
         /// <summary>
-        /// Number of lines to read from the end of the file. Default 100.
+        /// Number of lines to read from the end of the file. Default is DefaultLineCount.
         /// </summary>
         public int LineCount { get; set; }
 
         public Watcher()
         {
-            LineCount = 80;
+            LineCount = DefaultLineCount;
             fileSystemWatcher.Changed += FileSystemWatcher_Changed;
             fileSystemWatcher.Created += FileSystemWatcher_Created;
             fileSystemWatcher.Renamed += FileSystemWatcher_Renamed;
