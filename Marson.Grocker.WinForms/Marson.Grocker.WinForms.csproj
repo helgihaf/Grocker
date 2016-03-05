@@ -69,6 +69,7 @@
     <Compile Include="WatcherView.Designer.cs">
       <DependentUpon>WatcherView.cs</DependentUpon>
     </Compile>
+    <Compile Include="WindowStateManager.cs" />
     <EmbeddedResource Include="FolderDialog.resx">
       <DependentUpon>FolderDialog.cs</DependentUpon>
     </EmbeddedResource>

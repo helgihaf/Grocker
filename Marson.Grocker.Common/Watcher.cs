@@ -139,8 +139,6 @@ namespace Marson.Grocker.Common
                 // Check for data on our current reader
                 if (reader != null)
                 {
-                    //var fileStream = reader.BaseStream as FileStream;
-                    //fileStream.
                     string line;
                     try
                     {
