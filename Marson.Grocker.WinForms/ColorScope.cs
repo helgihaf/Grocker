@@ -31,7 +31,6 @@ namespace Marson.Grocker.WinForms
         {
             if (colorFilter != null)
             {
-                // hmmm....
                 box.SelectionColor = box.ForeColor;
                 box.SelectionBackColor = box.BackColor;
             }

@@ -5,21 +5,25 @@
     <SelectorPattern>^\[\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}.\d{3}\]</SelectorPattern>
     <Filters>
       <ColorFilter>
+        <Name>Warning</Name>
         <Pattern>\[Warning\]</Pattern>
         <ForegroundColor>DarkYellow</ForegroundColor>
         <BackgroundColor>Black</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
+        <Name>Error</Name>
         <Pattern>\[Error\]</Pattern>
         <ForegroundColor>White</ForegroundColor>
         <BackgroundColor>Red</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
+        <Name>Debug</Name>
         <Pattern>\[Debug\]</Pattern>
         <ForegroundColor>Gray</ForegroundColor>
         <BackgroundColor>Black</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
+        <Name>Info</Name>
         <Pattern>\[Info\]</Pattern>
         <ForegroundColor>Cyan</ForegroundColor>
         <BackgroundColor>Black</BackgroundColor>
@@ -31,21 +35,25 @@
     <SelectorPattern>^\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}.\d{3}\|TRID</SelectorPattern>
     <Filters>
       <ColorFilter>
+        <Name>Warning</Name>
         <Pattern>\|WARNING\&gt;</Pattern>
         <ForegroundColor>DarkYellow</ForegroundColor>
         <BackgroundColor>Black</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
+        <Name>Error</Name>
         <Pattern>\|ERROR\&gt;</Pattern>
         <ForegroundColor>White</ForegroundColor>
         <BackgroundColor>Red</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
+        <Name>Debug</Name>
         <Pattern>\|DEBUG\&gt;</Pattern>
         <ForegroundColor>Black</ForegroundColor>
         <BackgroundColor>Gray</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
+        <Name>Info</Name>
         <Pattern>\|INFO\&gt;</Pattern>
         <ForegroundColor>Cyan</ForegroundColor>
         <BackgroundColor>Black</BackgroundColor>
@@ -57,11 +65,13 @@
     <SelectorPattern>^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\s)|(#\w+:)</SelectorPattern>
     <Filters>
       <ColorFilter>
+        <Name>Post errors</Name>
         <Pattern>POST .*- [4-5]\d\d </Pattern>
         <ForegroundColor>White</ForegroundColor>
         <BackgroundColor>Red</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
+        <Name>Post warnings</Name>
         <Pattern>POST .*- 3\d\d </Pattern>
         <ForegroundColor>DarkYellow</ForegroundColor>
         <BackgroundColor>Black</BackgroundColor>

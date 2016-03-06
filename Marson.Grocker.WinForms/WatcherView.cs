@@ -108,7 +108,7 @@ namespace Marson.Grocker.WinForms
 
         private ILineWriter CreateWriter()
         {
-            var writer = new RichTextBoxLineWriter(richTextBox);
+            var writer = new RichTextBoxLineWriter(richTextBox, colorFilterSummary);
             writer.ColorSchemas = ColorSchemas;
             return writer;
         }

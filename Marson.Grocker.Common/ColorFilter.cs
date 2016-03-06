@@ -9,6 +9,11 @@ namespace Marson.Grocker.Common
         private Regex regex;
 
         /// <summary>
+        /// Optional name of the filter
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// The Regex pattern that is used to determine whether to apply this color filter.
         /// </summary>
         public string Pattern { get; set; }

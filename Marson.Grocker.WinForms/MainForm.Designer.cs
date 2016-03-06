@@ -32,10 +32,11 @@
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openrecentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openrecentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.detachToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -63,6 +64,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
             this.openrecentToolStripMenuItem,
+            this.detachToolStripMenuItem,
             this.closeToolStripMenuItem,
             this.toolStripMenuItem1,
             this.exitToolStripMenuItem});
@@ -76,6 +78,12 @@
             this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenMenuItemClick);
+            // 
+            // openrecentToolStripMenuItem
+            // 
+            this.openrecentToolStripMenuItem.Name = "openrecentToolStripMenuItem";
+            this.openrecentToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openrecentToolStripMenuItem.Text = "Open &recent";
             // 
             // closeToolStripMenuItem
             // 
@@ -95,11 +103,12 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             // 
-            // openrecentToolStripMenuItem
+            // detachToolStripMenuItem
             // 
-            this.openrecentToolStripMenuItem.Name = "openrecentToolStripMenuItem";
-            this.openrecentToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.openrecentToolStripMenuItem.Text = "Open &recent";
+            this.detachToolStripMenuItem.Name = "detachToolStripMenuItem";
+            this.detachToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.detachToolStripMenuItem.Text = "&Detach";
+            this.detachToolStripMenuItem.Click += new System.EventHandler(this.DetachMenuItemClick);
             // 
             // MainForm
             // 
@@ -130,6 +139,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openrecentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem detachToolStripMenuItem;
     }
 }
 

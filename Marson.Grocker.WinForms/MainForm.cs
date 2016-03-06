@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace Marson.Grocker.WinForms
 {
-    public partial class MainForm : Form, IWindowState
+    public partial class MainForm : Form, IWindowState, IWatcherViewHost
     {
         private readonly WindowStateManager windowStateManager;
         private readonly FolderDialog folderDialog = new FolderDialog();
@@ -119,24 +119,50 @@ namespace Marson.Grocker.WinForms
         private void CloseMenuItemClick(object sender, EventArgs e)
         {
             int index = tabControl.SelectedIndex;
-            if (index >= 0 && index < tabControl.TabPages.Count)
+            if (index >= 0)
             {
                 CloseTabPage(index);
             }
         }
 
+        //private async void OpenTabPage(string directoryPath)
+        //{
+        //    TabPage page = new TabPage(Path.GetFileName(directoryPath));
+        //    WatcherView view = new WatcherView();
+        //    view.Name = "view";
+        //    page.Controls.Add(view);
+        //    page.Tag = view;
+        //    view.Dock = DockStyle.Fill;
+        //    view.DirectoryPath = directoryPath;
+        //    view.ColorSchemas = colorSchemas;
+        //    tabControl.TabPages.Add(page);
+        //    tabControl.SelectedTab = page;
+        //    try
+        //    {
+        //        await view.Start();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        tabControl.TabPages.Remove(page);
+        //        if (ex is ArgumentException || ex is IOException)
+        //        {
+        //            ShowError("Error opening directory \"{0}\": {1}", directoryPath, ex.Message);
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+        //}
+
         private async void OpenTabPage(string directoryPath)
         {
-            TabPage page = new TabPage(Path.GetFileName(directoryPath));
             WatcherView view = new WatcherView();
             view.Name = "view";
-            page.Controls.Add(view);
-            page.Tag = view;
             view.Dock = DockStyle.Fill;
             view.DirectoryPath = directoryPath;
             view.ColorSchemas = colorSchemas;
-            tabControl.TabPages.Add(page);
-            tabControl.SelectedTab = page;
+            var page = OpenTabPage(view);
             try
             {
                 await view.Start();
@@ -146,7 +172,7 @@ namespace Marson.Grocker.WinForms
                 tabControl.TabPages.Remove(page);
                 if (ex is ArgumentException || ex is IOException)
                 {
-                    ShowError("Error opening directory \"{0}\": {1}", directoryPath, ex.Message);
+                    ShowError("Error opening directory {0}: {1}", directoryPath, ex.Message);
                 }
                 else
                 {
@@ -155,15 +181,31 @@ namespace Marson.Grocker.WinForms
             }
         }
 
+        private TabPage OpenTabPage(WatcherView view)
+        {
+            TabPage page = new TabPage(Path.GetFileName(view.DirectoryPath));
+            page.Controls.Add(view);
+            page.Tag = view;
+            tabControl.TabPages.Add(page);
+            tabControl.SelectedTab = page;
+            return page;
+        }
+
         private void CloseTabPage(int index)
         {
-            var page = tabControl.TabPages[index];
-            var view = page.Controls["view"] as WatcherView;
+            WatcherView view = GetWatcherView(index);
             if (view != null && view.IsStarted)
             {
                 view.Stop();
             }
             tabControl.TabPages.RemoveAt(index);
+        }
+
+        private WatcherView GetWatcherView(int tabPageIndex)
+        {
+            var page = tabControl.TabPages[tabPageIndex];
+            var view = page.Controls["view"] as WatcherView;
+            return view;
         }
 
         private void ShowError(string format, params string[] args)
@@ -179,6 +221,36 @@ namespace Marson.Grocker.WinForms
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             Settings.Save();
+        }
+
+        private void DetachMenuItemClick(object sender, EventArgs e)
+        {
+            int index = tabControl.SelectedIndex;
+            if (index >= 0)
+            {
+                DetachTabPage(index);
+            }
+        }
+
+        private void DetachTabPage(int index)
+        {
+            var watcherView = GetWatcherView(index);
+            if (watcherView == null)
+            {
+                return;
+            }
+            var detachedForm = new DetachedForm();
+            detachedForm.Text = watcherView.DirectoryPath;
+            detachedForm.AttachHost = this;
+            tabControl.TabPages[index].Controls.Remove(watcherView);
+            detachedForm.Controls.Add(watcherView);
+            detachedForm.Show();
+            tabControl.TabPages.RemoveAt(index);
+        }
+
+        void IWatcherViewHost.Attach(WatcherView watcherView)
+        {
+            OpenTabPage(watcherView);
         }
 
         //// Handy serializing thingy

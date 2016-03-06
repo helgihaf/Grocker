@@ -16,14 +16,16 @@ namespace Marson.Grocker.WinForms
 
         private readonly RichTextBox box;
         private readonly List<ColorSchema> colorSchemas = new List<ColorSchema>();
+        private readonly IFilterCounter filterCounter;
 
         private bool autoDetectColorSchema = true;
         private bool autoDetectionPending = true;
         private ColorSchema colorSchema;
 
-        public RichTextBoxLineWriter(RichTextBox box)
+        public RichTextBoxLineWriter(RichTextBox box, IFilterCounter filterCounter)
         {
             this.box = box;
+            this.filterCounter = filterCounter;
         }
 
         public bool AutoDetectColorSchema
@@ -165,7 +167,12 @@ namespace Marson.Grocker.WinForms
 
         private ColorScope CreateColorScope(string line)
         {
-            return new ColorScope(box, ColorSchema?.GetMatchingFilter(line));
+            var filter = ColorSchema?.GetMatchingFilter(line);
+            if (filter != null && filterCounter != null)
+            {
+                filterCounter.Increment(filter.Name);
+            }
+            return new ColorScope(box, filter);
         }
     }
 }
