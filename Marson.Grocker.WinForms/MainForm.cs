@@ -205,6 +205,7 @@ namespace Marson.Grocker.WinForms
                 }
             }
             currentView = view;
+            view.BringToFront();
         }
 
  

@@ -36,7 +36,7 @@
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.buttonPause = new System.Windows.Forms.Button();
             this.richTextBox = new System.Windows.Forms.RichTextBox();
-            this.colorFilterSummary = new Marson.Grocker.WinForms.ColorFilterSummary();
+            this.colorFilterSummary = new Marson.Grocker.WinForms.ColorFilterSummary2();
             this.panelTop.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,7 +49,7 @@
             this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTop.Location = new System.Drawing.Point(0, 0);
             this.panelTop.Name = "panelTop";
-            this.panelTop.Size = new System.Drawing.Size(553, 157);
+            this.panelTop.Size = new System.Drawing.Size(553, 63);
             this.panelTop.TabIndex = 0;
             // 
             // textBoxPath
@@ -99,22 +99,23 @@
             this.richTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richTextBox.ForeColor = System.Drawing.Color.Lime;
-            this.richTextBox.Location = new System.Drawing.Point(0, 157);
+            this.richTextBox.Location = new System.Drawing.Point(0, 63);
             this.richTextBox.Name = "richTextBox";
             this.richTextBox.ReadOnly = true;
-            this.richTextBox.Size = new System.Drawing.Size(553, 186);
+            this.richTextBox.Size = new System.Drawing.Size(553, 280);
             this.richTextBox.TabIndex = 1;
             this.richTextBox.Text = "";
             this.richTextBox.WordWrap = false;
             // 
             // colorFilterSummary
             // 
-            this.colorFilterSummary.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.colorFilterSummary.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.colorFilterSummary.Location = new System.Drawing.Point(3, 30);
+            this.colorFilterSummary.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.colorFilterSummary.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.colorFilterSummary.Location = new System.Drawing.Point(3, 29);
             this.colorFilterSummary.Name = "colorFilterSummary";
-            this.colorFilterSummary.Size = new System.Drawing.Size(547, 121);
+            this.colorFilterSummary.Size = new System.Drawing.Size(547, 26);
             this.colorFilterSummary.TabIndex = 3;
             // 
             // WatcherView
@@ -139,6 +140,6 @@
         private System.Windows.Forms.Button buttonPause;
         private System.Windows.Forms.Button buttonPlay;
         private System.Windows.Forms.ImageList imageList;
-        private ColorFilterSummary colorFilterSummary;
+        private ColorFilterSummary2 colorFilterSummary;
     }
 }

@@ -157,6 +157,10 @@ namespace Marson.Grocker.WinForms
             {
                 colorSchema = colorSchemas[indexOfMax];
                 autoDetectionPending = false;
+                if (filterCounter != null)
+                {
+                    filterCounter.AnnounceColorSchema(colorSchema);
+                }
             }
         }
 
