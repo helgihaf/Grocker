@@ -54,12 +54,6 @@
       <DependentUpon>ColorFilterSummary.cs</DependentUpon>
     </Compile>
     <Compile Include="ColorScope.cs" />
-    <Compile Include="DetachedForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DetachedForm.Designer.cs">
-      <DependentUpon>DetachedForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="FolderDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -67,7 +61,6 @@
       <DependentUpon>FolderDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="IFilterCounter.cs" />
-    <Compile Include="IWatcherViewHost.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -86,9 +79,6 @@
     <Compile Include="WindowStateManager.cs" />
     <EmbeddedResource Include="ColorFilterSummary.resx">
       <DependentUpon>ColorFilterSummary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DetachedForm.resx">
-      <DependentUpon>DetachedForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FolderDialog.resx">
       <DependentUpon>FolderDialog.cs</DependentUpon>

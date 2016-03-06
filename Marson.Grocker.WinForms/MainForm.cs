@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -12,18 +13,28 @@ using System.Windows.Forms;
 
 namespace Marson.Grocker.WinForms
 {
-    public partial class MainForm : Form, IWindowState, IWatcherViewHost
+    public partial class MainForm : Form, IWindowState
     {
         private readonly WindowStateManager windowStateManager;
         private readonly FolderDialog folderDialog = new FolderDialog();
+        private readonly string directoryPathFromArgs;
         private List<ColorSchema> colorSchemas;
+        private WatcherView currentView;
 
-        public MainForm()
+        public MainForm() : this(null)
+        {
+        }
+
+        public MainForm(string[] args)
         {
             InitializeComponent();
             windowStateManager = new WindowStateManager(this, this);
             windowStateManager.RestoreWindowState();
             colorSchemas = LoadColorSchemas();
+            if (args != null && args.Length >= 1)
+            {
+                directoryPathFromArgs = args[0];
+            }
         }
 
         private Properties.Settings Settings
@@ -68,6 +79,10 @@ namespace Marson.Grocker.WinForms
             }
             folderDialog.FolderList = Settings.FolderList;
             PopulateRecentFolderMenu();
+            if (!string.IsNullOrEmpty(directoryPathFromArgs))
+            {
+                OpenCurrentView(directoryPathFromArgs);
+            }
         }
 
         private void PopulateRecentFolderMenu()
@@ -103,7 +118,7 @@ namespace Marson.Grocker.WinForms
         {
             if (folderDialog.ShowDialog(this) == DialogResult.OK)
             {
-                OpenTabPage(folderDialog.Folder);
+                OpenDirectoryPath(folderDialog.Folder);
             }
         }
 
@@ -112,17 +127,13 @@ namespace Marson.Grocker.WinForms
             var menuItem = sender as ToolStripMenuItem;
             if (menuItem != null && !string.IsNullOrEmpty(menuItem.Tag as string))
             {
-                OpenTabPage(menuItem.Tag as string);
+                OpenDirectoryPath(menuItem.Tag as string);
             }
         }
 
         private void CloseMenuItemClick(object sender, EventArgs e)
         {
-            int index = tabControl.SelectedIndex;
-            if (index >= 0)
-            {
-                CloseTabPage(index);
-            }
+            CloseCurrentView();
         }
 
         //private async void OpenTabPage(string directoryPath)
@@ -155,21 +166,35 @@ namespace Marson.Grocker.WinForms
         //    }
         //}
 
-        private async void OpenTabPage(string directoryPath)
+        private void OpenDirectoryPath(string directoryPath)
         {
+            if (currentView == null)
+            {
+                OpenCurrentView(directoryPath);
+            }
+            else
+            {
+                OpenExternalView(directoryPath);
+            }
+        }
+
+        private async void OpenCurrentView(string directoryPath)
+        {
+            Debug.Assert(currentView == null);
+
             WatcherView view = new WatcherView();
             view.Name = "view";
             view.Dock = DockStyle.Fill;
             view.DirectoryPath = directoryPath;
             view.ColorSchemas = colorSchemas;
-            var page = OpenTabPage(view);
+            Controls.Add(view);
             try
             {
                 await view.Start();
             }
             catch (Exception ex)
             {
-                tabControl.TabPages.Remove(page);
+                Controls.Remove(view);
                 if (ex is ArgumentException || ex is IOException)
                 {
                     ShowError("Error opening directory {0}: {1}", directoryPath, ex.Message);
@@ -179,33 +204,20 @@ namespace Marson.Grocker.WinForms
                     throw;
                 }
             }
+            currentView = view;
         }
 
-        private TabPage OpenTabPage(WatcherView view)
+ 
+        private void CloseCurrentView()
         {
-            TabPage page = new TabPage(Path.GetFileName(view.DirectoryPath));
-            page.Controls.Add(view);
-            page.Tag = view;
-            tabControl.TabPages.Add(page);
-            tabControl.SelectedTab = page;
-            return page;
-        }
-
-        private void CloseTabPage(int index)
-        {
-            WatcherView view = GetWatcherView(index);
-            if (view != null && view.IsStarted)
+            if (currentView != null)
             {
-                view.Stop();
+                if (currentView.IsStarted)
+                {
+                    currentView.Stop();
+                }
+                Controls.Remove(currentView);
             }
-            tabControl.TabPages.RemoveAt(index);
-        }
-
-        private WatcherView GetWatcherView(int tabPageIndex)
-        {
-            var page = tabControl.TabPages[tabPageIndex];
-            var view = page.Controls["view"] as WatcherView;
-            return view;
         }
 
         private void ShowError(string format, params string[] args)
@@ -223,35 +235,19 @@ namespace Marson.Grocker.WinForms
             Settings.Save();
         }
 
-        private void DetachMenuItemClick(object sender, EventArgs e)
+        private void OpenExternalView(string directoryPath)
         {
-            int index = tabControl.SelectedIndex;
-            if (index >= 0)
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var startInfo = new System.Diagnostics.ProcessStartInfo
             {
-                DetachTabPage(index);
-            }
+                FileName = new Uri(assembly.CodeBase).LocalPath,
+                Arguments = "\"" + directoryPath + "\"",
+                UseShellExecute = false,
+                WorkingDirectory = Environment.CurrentDirectory,
+            };
+            System.Diagnostics.Process.Start(startInfo);
         }
 
-        private void DetachTabPage(int index)
-        {
-            var watcherView = GetWatcherView(index);
-            if (watcherView == null)
-            {
-                return;
-            }
-            var detachedForm = new DetachedForm();
-            detachedForm.Text = watcherView.DirectoryPath;
-            detachedForm.AttachHost = this;
-            tabControl.TabPages[index].Controls.Remove(watcherView);
-            detachedForm.Controls.Add(watcherView);
-            detachedForm.Show();
-            tabControl.TabPages.RemoveAt(index);
-        }
-
-        void IWatcherViewHost.Attach(WatcherView watcherView)
-        {
-            OpenTabPage(watcherView);
-        }
 
         //// Handy serializing thingy
         //var sc1 = new ColorSchema();
