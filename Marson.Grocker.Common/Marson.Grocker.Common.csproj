@@ -48,6 +48,7 @@
     <Compile Include="ColorMap.cs" />
     <Compile Include="ColorSchema.cs" />
     <Compile Include="ColorSchemaLocator.cs" />
+    <Compile Include="FilePathEventArgs.cs" />
     <Compile Include="IColorSchemaSerializer.cs" />
     <Compile Include="ILineWriter.cs" />
     <Compile Include="Line.cs" />

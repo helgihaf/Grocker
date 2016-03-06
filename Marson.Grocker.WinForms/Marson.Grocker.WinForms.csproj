@@ -47,11 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ColorFilterSummary2.cs">
+    <Compile Include="ColorFilterSummary.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ColorFilterSummary2.Designer.cs">
-      <DependentUpon>ColorFilterSummary2.cs</DependentUpon>
+    <Compile Include="ColorFilterSummary.Designer.cs">
+      <DependentUpon>ColorFilterSummary.cs</DependentUpon>
     </Compile>
     <Compile Include="ColorScope.cs" />
     <Compile Include="FolderDialog.cs">
@@ -77,8 +77,8 @@
       <DependentUpon>WatcherView.cs</DependentUpon>
     </Compile>
     <Compile Include="WindowStateManager.cs" />
-    <EmbeddedResource Include="ColorFilterSummary2.resx">
-      <DependentUpon>ColorFilterSummary2.cs</DependentUpon>
+    <EmbeddedResource Include="ColorFilterSummary.resx">
+      <DependentUpon>ColorFilterSummary.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FolderDialog.resx">
       <DependentUpon>FolderDialog.cs</DependentUpon>

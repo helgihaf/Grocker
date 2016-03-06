@@ -31,19 +31,19 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WatcherView));
             this.panelTop = new System.Windows.Forms.Panel();
-            this.textBoxPath = new System.Windows.Forms.TextBox();
+            this.textBoxFilePath = new System.Windows.Forms.TextBox();
             this.buttonPlay = new System.Windows.Forms.Button();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.buttonPause = new System.Windows.Forms.Button();
             this.richTextBox = new System.Windows.Forms.RichTextBox();
-            this.colorFilterSummary = new Marson.Grocker.WinForms.ColorFilterSummary2();
+            this.colorFilterSummary = new Marson.Grocker.WinForms.ColorFilterSummary();
             this.panelTop.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelTop
             // 
             this.panelTop.Controls.Add(this.colorFilterSummary);
-            this.panelTop.Controls.Add(this.textBoxPath);
+            this.panelTop.Controls.Add(this.textBoxFilePath);
             this.panelTop.Controls.Add(this.buttonPlay);
             this.panelTop.Controls.Add(this.buttonPause);
             this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
@@ -52,15 +52,15 @@
             this.panelTop.Size = new System.Drawing.Size(553, 63);
             this.panelTop.TabIndex = 0;
             // 
-            // textBoxPath
+            // textBoxFilePath
             // 
-            this.textBoxPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBoxFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxPath.Location = new System.Drawing.Point(39, 3);
-            this.textBoxPath.Name = "textBoxPath";
-            this.textBoxPath.ReadOnly = true;
-            this.textBoxPath.Size = new System.Drawing.Size(511, 20);
-            this.textBoxPath.TabIndex = 0;
+            this.textBoxFilePath.Location = new System.Drawing.Point(39, 3);
+            this.textBoxFilePath.Name = "textBoxFilePath";
+            this.textBoxFilePath.ReadOnly = true;
+            this.textBoxFilePath.Size = new System.Drawing.Size(511, 20);
+            this.textBoxFilePath.TabIndex = 0;
             // 
             // buttonPlay
             // 
@@ -96,12 +96,14 @@
             // 
             this.richTextBox.BackColor = System.Drawing.Color.Black;
             this.richTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBox.DetectUrls = false;
             this.richTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richTextBox.ForeColor = System.Drawing.Color.Lime;
             this.richTextBox.Location = new System.Drawing.Point(0, 63);
             this.richTextBox.Name = "richTextBox";
             this.richTextBox.ReadOnly = true;
+            this.richTextBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Horizontal;
             this.richTextBox.Size = new System.Drawing.Size(553, 280);
             this.richTextBox.TabIndex = 1;
             this.richTextBox.Text = "";
@@ -136,10 +138,10 @@
 
         private System.Windows.Forms.Panel panelTop;
         private System.Windows.Forms.RichTextBox richTextBox;
-        private System.Windows.Forms.TextBox textBoxPath;
+        private System.Windows.Forms.TextBox textBoxFilePath;
         private System.Windows.Forms.Button buttonPause;
         private System.Windows.Forms.Button buttonPlay;
         private System.Windows.Forms.ImageList imageList;
-        private ColorFilterSummary2 colorFilterSummary;
+        private ColorFilterSummary colorFilterSummary;
     }
 }

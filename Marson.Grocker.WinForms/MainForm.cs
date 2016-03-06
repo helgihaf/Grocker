@@ -15,6 +15,7 @@ namespace Marson.Grocker.WinForms
 {
     public partial class MainForm : Form, IWindowState
     {
+        private const string ApplicationName = "Grocker";
         private readonly WindowStateManager windowStateManager;
         private readonly FolderDialog folderDialog = new FolderDialog();
         private readonly string directoryPathFromArgs;
@@ -136,36 +137,6 @@ namespace Marson.Grocker.WinForms
             CloseCurrentView();
         }
 
-        //private async void OpenTabPage(string directoryPath)
-        //{
-        //    TabPage page = new TabPage(Path.GetFileName(directoryPath));
-        //    WatcherView view = new WatcherView();
-        //    view.Name = "view";
-        //    page.Controls.Add(view);
-        //    page.Tag = view;
-        //    view.Dock = DockStyle.Fill;
-        //    view.DirectoryPath = directoryPath;
-        //    view.ColorSchemas = colorSchemas;
-        //    tabControl.TabPages.Add(page);
-        //    tabControl.SelectedTab = page;
-        //    try
-        //    {
-        //        await view.Start();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        tabControl.TabPages.Remove(page);
-        //        if (ex is ArgumentException || ex is IOException)
-        //        {
-        //            ShowError("Error opening directory \"{0}\": {1}", directoryPath, ex.Message);
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-        //}
-
         private void OpenDirectoryPath(string directoryPath)
         {
             if (currentView == null)
@@ -206,6 +177,7 @@ namespace Marson.Grocker.WinForms
             }
             currentView = view;
             view.BringToFront();
+            Text = ApplicationName + " " + directoryPath;
         }
 
  

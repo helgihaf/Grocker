@@ -1,6 +1,6 @@
 ﻿namespace Marson.Grocker.WinForms
 {
-    partial class ColorFilterSummary2
+    partial class ColorFilterSummary
     {
         /// <summary> 
         /// Required designer variable.

@@ -19,21 +19,6 @@ namespace Marson.Grocker.Common
         private FileSystemWatcher fileSystemWatcher = new FileSystemWatcher();
         private Task readTask;
 
-        public void Dispose()
-        {
-            if (fileSystemWatcher != null)
-            {
-                fileSystemWatcher.EnableRaisingEvents = false;
-                fileSystemWatcher.Dispose();
-                fileSystemWatcher = null;
-            }
-
-            if (readTask != null)
-            {
-                ShutdownReadTask();
-            }
-        }
-
         private enum WatcherEventType
         {
             Create,
@@ -46,6 +31,38 @@ namespace Marson.Grocker.Common
         {
             public WatcherEventType EventType { get; set; }
             public EventArgs EventArgs { get; set; }
+        }
+
+        public Watcher()
+        {
+            LineCount = DefaultLineCount;
+            fileSystemWatcher.Changed += FileSystemWatcher_Changed;
+            fileSystemWatcher.Created += FileSystemWatcher_Created;
+            fileSystemWatcher.Renamed += FileSystemWatcher_Renamed;
+            fileSystemWatcher.Deleted += FileSystemWatcher_Deleted;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (fileSystemWatcher != null)
+                {
+                    fileSystemWatcher.EnableRaisingEvents = false;
+                    fileSystemWatcher.Dispose();
+                    fileSystemWatcher = null;
+                }
+
+                if (readTask != null)
+                {
+                    ShutdownReadTask();
+                }
+            }
         }
 
         /// <summary>
@@ -73,28 +90,19 @@ namespace Marson.Grocker.Common
         }
 
         /// <summary>
-        /// Switch controlling whether to switch to a new file if one is created.
-        /// </summary>
-        //public bool AlwaysShowLates { get; set; }
-
-        /// <summary>
         /// Number of lines to read from the end of the file. Default is DefaultLineCount.
         /// </summary>
         public int LineCount { get; set; }
-
-        public Watcher()
-        {
-            LineCount = DefaultLineCount;
-            fileSystemWatcher.Changed += FileSystemWatcher_Changed;
-            fileSystemWatcher.Created += FileSystemWatcher_Created;
-            fileSystemWatcher.Renamed += FileSystemWatcher_Renamed;
-            fileSystemWatcher.Deleted += FileSystemWatcher_Deleted;
-        }
 
         public bool IsStarted
         {
             get { return fileSystemWatcher.EnableRaisingEvents; }
         }
+
+        /// <summary>
+        /// Fires when the watcher starts watching a new file.
+        /// </summary>
+        public event EventHandler<FilePathEventArgs> FileFound;
 
         public void Start()
         {
@@ -187,9 +195,18 @@ namespace Marson.Grocker.Common
                 if (streamReader != null)
                 {
                     LineWriter.WriteLine(string.Format("++++++ File: {0} ++++++", filePath));
+                    OnFileFound(filePath);
                 }
             }
             return streamReader;
+        }
+
+        protected virtual void OnFileFound(string filePath)
+        {
+            if (FileFound != null)
+            {
+                FileFound(this, new FilePathEventArgs { FilePath = filePath });
+            }
         }
 
         private StreamReader FindTailOf(string filePath)
@@ -213,12 +230,6 @@ namespace Marson.Grocker.Common
                 select filePath;
             return filePaths.FirstOrDefault();
         }
-
-        private void WriteNewFilePathEvent(string filePath)
-        {
-            LineWriter.WriteLine(string.Format("++++++ File: {0} ++++++", filePath));
-        }
-
 
         private void EnqueueEvent(WatcherEvent watcherEvent)
         {

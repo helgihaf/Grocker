@@ -11,12 +11,12 @@ using Marson.Grocker.Common;
 
 namespace Marson.Grocker.WinForms
 {
-    public partial class ColorFilterSummary2 : UserControl, IFilterCounter
+    public partial class ColorFilterSummary : UserControl, IFilterCounter
     {
         private readonly Dictionary<string, Label> filters = new Dictionary<string, Label>();
         private ColorSchema colorSchema;
 
-        public ColorFilterSummary2()
+        public ColorFilterSummary()
         {
             InitializeComponent();
         }

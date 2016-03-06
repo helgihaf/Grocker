@@ -21,17 +21,7 @@ namespace Marson.Grocker.WinForms
             InitializeComponent();
         }
 
-        public string DirectoryPath
-        {
-            get
-            {
-                return textBoxPath.Text;
-            }
-            set
-            {
-                textBoxPath.Text = value;
-            }
-        }
+        public string DirectoryPath { get; set; }
 
         public List<ColorSchema> ColorSchemas { get; set; }
 
@@ -82,6 +72,7 @@ namespace Marson.Grocker.WinForms
                 newWatcher.DirectoryPath = DirectoryPath;
                 newWatcher.Filter = "*.log";
                 newWatcher.LineWriter = CreateWriter();
+                newWatcher.FileFound += WatcherFileFound;
                 newWatcher.Start();
             }
             catch
@@ -96,6 +87,23 @@ namespace Marson.Grocker.WinForms
                 throw;
             }
             return newWatcher;
+        }
+
+        private void WatcherFileFound(object sender, FilePathEventArgs e)
+        {
+            RunOnMainThread(() => textBoxFilePath.Text = e.FilePath);
+        }
+
+        private void RunOnMainThread(Action action)
+        {
+            if (InvokeRequired)
+            {
+                Invoke((MethodInvoker)delegate { action(); });
+            }
+            else
+            {
+                action();
+            }
         }
 
         private void UpdateActions()
