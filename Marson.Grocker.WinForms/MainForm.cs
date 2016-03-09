@@ -141,12 +141,24 @@ namespace Marson.Grocker.WinForms
         {
             if (currentView == null)
             {
-                OpenCurrentView(directoryPath);
+                OpenBrowserView(directoryPath);
+                //OpenCurrentView(directoryPath);
             }
             else
             {
                 OpenExternalView(directoryPath);
             }
+        }
+
+        private void OpenBrowserView(string directoryPath)
+        {
+            BrowserView view = new BrowserView();
+            view.Name = "view";
+            view.Dock = DockStyle.Fill;
+            Controls.Add(view);
+            view.BringToFront();
+            Application.DoEvents();
+            view.Open(Path.Combine(directoryPath, "LogFile.log"));
         }
 
         private async void OpenCurrentView(string directoryPath)

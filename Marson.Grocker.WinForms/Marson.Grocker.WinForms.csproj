@@ -47,6 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BrowserView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BrowserView.Designer.cs">
+      <DependentUpon>BrowserView.cs</DependentUpon>
+    </Compile>
     <Compile Include="ColorFilterSummary.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -77,6 +83,9 @@
       <DependentUpon>WatcherView.cs</DependentUpon>
     </Compile>
     <Compile Include="WindowStateManager.cs" />
+    <EmbeddedResource Include="BrowserView.resx">
+      <DependentUpon>BrowserView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ColorFilterSummary.resx">
       <DependentUpon>ColorFilterSummary.cs</DependentUpon>
     </EmbeddedResource>

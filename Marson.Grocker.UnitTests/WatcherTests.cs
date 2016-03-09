@@ -231,16 +231,6 @@ namespace Marson.Grocker.UnitTests
         }
 
 
-        private string CreateIsolatedTempCopy(string logFilePath)
-        {
-            var dateTimeDir = DateTime.Now.ToString("yyyy-MM-ddTHH.mm.ss.fff");
-            var tempPath = Path.Combine(Path.GetTempPath(), dateTimeDir);
-            Directory.CreateDirectory(tempPath);
-            var tempFileName = Path.Combine(tempPath, "log.log");
-            File.Copy(logFilePath, tempFileName, true);
-            return tempFileName;
-        }
-
         private static void CompareLines(string[] expected, string[] actual)
         {
             const string FileNameMarker = "++++++ ";

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Marson.Grocker.Common
 {
-    public class LogFile
+    public class LogFile : IItemsProvider<string>
     {
         private const int MaxAllowedLineLength = 1024 * 1024;
 
@@ -115,22 +115,17 @@ namespace Marson.Grocker.Common
 
         internal void LoadLines(int lineIndex, string[] destLines)
         {
-            var startLine = Lines[lineIndex];
-            using (var stream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
-            {
-                stream.Seek(startLine.Index, SeekOrigin.Begin);
-                using (var reader = new StreamReader(stream, encoding))
-                {
-                    string line;
-                    for (int i = 0; (line = reader.ReadLine()) != null && i < destLines.Length; i++)
-                    {
-                        destLines[i] = line;
-                    }
-                }
-            }
+            LoadLines(lineIndex, destLines.Length, (index, line) => destLines[index] = line);
         }
 
-        internal void CopyLines(int lineIndex, ILineWriter lineWriter, int lineCount)
+        public IList<string> LoadLines(int lineIndex, int count)
+        {
+            var list = new List<string>(count);
+            LoadLines(lineIndex, count, (index, line) => list.Add(line));
+            return list;
+        }
+
+        private void LoadLines(int lineIndex, int count, Action<int, string> action)
         {
             var startLine = Lines[lineIndex];
             using (var stream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
@@ -139,13 +134,14 @@ namespace Marson.Grocker.Common
                 using (var reader = new StreamReader(stream, encoding))
                 {
                     string line;
-                    for (int i = 0; (line = reader.ReadLine()) != null && i < lineCount; i++)
+                    for (int i = 0; (line = reader.ReadLine()) != null && i < count; i++)
                     {
-                        lineWriter.WriteLine(line);
+                        action(i, line);
                     }
                 }
             }
         }
+
 
         internal StreamReader CreateReader(int lineIndex)
         {
@@ -161,6 +157,16 @@ namespace Marson.Grocker.Common
                 stream.Dispose();
                 throw;
             }
+        }
+
+        int IItemsProvider<string>.GetCount()
+        {
+            return lines.Count();
+        }
+
+        IList<string> IItemsProvider<string>.GetRange(int startIndex, int count)
+        {
+            throw new NotImplementedException();
         }
     }
 }
