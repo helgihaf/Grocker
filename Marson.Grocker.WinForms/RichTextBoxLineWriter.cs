@@ -79,9 +79,9 @@ namespace Marson.Grocker.WinForms
             using (var colorScope = CreateColorScope(line))
             {
                 box.AppendText(line + Environment.NewLine);
-                box.SelectionStart = box.Text.Length;
-                box.ScrollToCaret();
             }
+            box.SelectionStart = box.Text.Length;
+            box.ScrollToCaret();
         }
 
         private void CheckAndClean()

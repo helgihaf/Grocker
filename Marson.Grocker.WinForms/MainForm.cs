@@ -141,8 +141,8 @@ namespace Marson.Grocker.WinForms
         {
             if (currentView == null)
             {
-                OpenBrowserView(directoryPath);
-                //OpenCurrentView(directoryPath);
+                //OpenBrowserView(directoryPath);
+                OpenCurrentView(directoryPath);
             }
             else
             {

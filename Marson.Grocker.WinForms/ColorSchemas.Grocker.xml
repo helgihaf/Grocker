@@ -7,8 +7,8 @@
       <ColorFilter>
         <Name>Warning</Name>
         <Pattern>\[Warning\]</Pattern>
-        <ForegroundColor>DarkYellow</ForegroundColor>
-        <BackgroundColor>Black</BackgroundColor>
+        <ForegroundColor>Black</ForegroundColor>
+        <BackgroundColor>Gold</BackgroundColor>
       </ColorFilter>
       <ColorFilter>
         <Name>Error</Name>
